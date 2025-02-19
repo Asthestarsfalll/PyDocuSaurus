@@ -86,7 +86,7 @@ Process the input data.
 
 **Raises:**
 
-- `ValueError` (*ValueError*): If data is empty
+- (*ValueError*) If data is empty
 
 <a id="core-dataprocessor-transform"></a>
 ### `core.DataProcessor._transform`
@@ -204,8 +204,8 @@ Load and parse a JSON file.
 
 **Raises:**
 
-- `FileNotFoundError` (*FileNotFoundError*): If the file doesn't exist
-- `json.JSONDecodeError` (*json.JSONDecodeError*): If the file contains invalid JSON
+- (*FileNotFoundError*) If the file doesn't exist
+- (*json.JSONDecodeError*) If the file contains invalid JSON
 
 <a id="utils-validate-data"></a>
 ## `utils.validate_data`
