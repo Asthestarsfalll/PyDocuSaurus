@@ -259,6 +259,10 @@ def extract_docstrings_from_node(node, parent_qualname, heading_level=2):
         return lines
 
     if isinstance(node, ast.ClassDef):
+        # Skip private and special classes (starting with underscore)
+        if node.name.startswith("_") and not node.name.startswith("__"):
+            return lines
+
         qname = f"{parent_qualname}.{node.name}" if parent_qualname else node.name
         lines.extend(add_header(qname, provided_level=heading_level + 1))
         lines.append("")
@@ -274,6 +278,10 @@ def extract_docstrings_from_node(node, parent_qualname, heading_level=2):
         return lines
 
     if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+        # Skip private and special functions (starting with underscore)
+        if node.name.startswith("_") and not node.name.startswith("__"):
+            return lines
+
         qname = f"{parent_qualname}.{node.name}" if parent_qualname else node.name
         lines.extend(add_header(qname, provided_level=heading_level + 1))
         lines.append("")

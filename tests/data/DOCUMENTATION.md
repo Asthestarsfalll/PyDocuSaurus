@@ -10,7 +10,6 @@
         - [`__init__`](#sample-package-core-dataprocessor-config-init)
         - [`update`](#sample-package-core-dataprocessor-config-update)
       - [`process`](#sample-package-core-dataprocessor-process)
-      - [`_transform`](#sample-package-core-dataprocessor-transform)
     - [`batch_process`](#sample-package-core-batch-process)
   - [`models`](#sample-package-models)
     - [`BaseModel`](#sample-package-models-basemodel)
@@ -131,21 +130,6 @@ Process the input data.
 **Raises:**
 
 - (*ValueError*) If data is empty
-
-<a id="sample-package-core-dataprocessor-transform"></a>
-#### `_transform`
-
-```python
-def _transform(self, item: Any) -> Any:
-```
-
-Internal method to transform a single item.
-
-**Args:**
-
-- `item`: Item to transform
-
-**Returns:** Transformed item
 
 <a id="sample-package-core-batch-process"></a>
 ### `batch_process`
