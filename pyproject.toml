@@ -14,6 +14,10 @@ license = {text = "CC-0"}
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
 
+[project.urls]
+documentation = "https://github.com/criccomini/python-docstring-markdown/blob/main/DOCUMENTATION.md"
+repository = "https://github.com/criccomini/python-docstring-markdown"
+issues = "https://github.com/criccomini/python-docstring-markdown/issues"
 
 [tool.pdm]
 distribution = true
