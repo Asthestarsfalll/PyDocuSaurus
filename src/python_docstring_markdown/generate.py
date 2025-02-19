@@ -13,16 +13,14 @@ Additional features:
   - Headers have descriptive HTML anchors derived from their dotted names.
   - For each function/method, its signature is included with type hints (if present) and its return type.
   - Autodetects docstring formats (Google-style, NumPy-style, etc.) and reformats them into Markdown.
-  - The Exports section builds links to the documented sections by matching the actual headers.
 """
 
 import argparse
 import ast
 import os
 import re
-from pathlib import Path
 
-import docstring_parser  # Requires: pip install docstring-parser
+import docstring_parser
 
 # Global variables for the Table of Contents, anchors, and export info
 toc_entries = []  # List of tuples: (level, header_text, anchor)
@@ -40,20 +38,21 @@ def make_anchor(text):
     return text.strip("-")
 
 
-def add_header(header_text, level):
+def add_header(full_header_text, provided_level):
     """
     Create a markdown header with a unique, descriptive anchor and record it for the TOC.
+    Instead of printing the full dotted name, only the stem (last segment) is used
+    for display.
 
     Args:
-        header_text (str): The header text (expected to be a fully qualified dotted name).
-        level (int): The markdown header level (1 for h1, 2 for h2, etc.)
+        full_header_text (str): The fully qualified dotted name.
+        provided_level (int): The markdown header level to use.
 
     Returns:
         list of str: Markdown lines for the header (including an HTML anchor).
     """
-    global anchor_usage, toc_entries
-
-    anchor_base = make_anchor(header_text)
+    display_name = full_header_text.split(".")[-1]
+    anchor_base = make_anchor(full_header_text)
     count = anchor_usage.get(anchor_base, 0)
     if count:
         anchor = f"{anchor_base}-{count+1}"
@@ -61,24 +60,18 @@ def add_header(header_text, level):
         anchor = anchor_base
     anchor_usage[anchor_base] = count + 1
 
-    toc_entries.append((level, header_text, anchor))
-    return [f'<a id="{anchor}"></a>', f'{"#" * level} `{header_text}`']
+    # Save the full name along with the display name and anchor.
+    toc_entries.append((full_header_text, display_name, anchor))
+    return [f'<a id="{anchor}"></a>', f'{"#" * provided_level} `{display_name}`']
 
 
 def get_module_name(file_path, package_dir):
     """
-    Convert a file path to a dotted module name relative to package_dir.
-
-    For example, if package_dir is '/path/to/src' and file_path is
-    '/path/to/src/foo/bar/baz.py', the returned module name is 'foo.bar.baz'.
+    Convert a file path to a dotted module name relative to package_dir,
+    including the package’s base name.
+    For example, if package_dir is '/path/to/sample_package' and file_path is
+    '/path/to/sample_package/core.py', the returned module name is 'sample_package.core'.
     For __init__.py, the "__init__" part is dropped.
-
-    Args:
-        file_path (str): The absolute or relative file path.
-        package_dir (str): The root package directory.
-
-    Returns:
-        str: The dotted module name.
     """
     rel_path = os.path.relpath(file_path, package_dir)
     if rel_path.endswith(".py"):
@@ -86,9 +79,10 @@ def get_module_name(file_path, package_dir):
     parts = rel_path.split(os.sep)
     if parts[-1] == "__init__":
         parts = parts[:-1]
+    package_name = os.path.basename(os.path.abspath(package_dir))
     if not parts:
-        return os.path.basename(os.path.abspath(package_dir))
-    return ".".join(parts)
+        return package_name
+    return package_name + "." + ".".join(parts)
 
 
 def extract_all_from_ast(tree):
@@ -266,7 +260,7 @@ def extract_docstrings_from_node(node, parent_qualname, heading_level=2):
 
     if isinstance(node, ast.ClassDef):
         qname = f"{parent_qualname}.{node.name}" if parent_qualname else node.name
-        lines.extend(add_header(qname, level=heading_level + 1))
+        lines.extend(add_header(qname, provided_level=heading_level + 1))
         lines.append("")
         class_doc = ast.get_docstring(node)
         if class_doc:
@@ -281,7 +275,7 @@ def extract_docstrings_from_node(node, parent_qualname, heading_level=2):
 
     if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
         qname = f"{parent_qualname}.{node.name}" if parent_qualname else node.name
-        lines.extend(add_header(qname, level=heading_level + 1))
+        lines.extend(add_header(qname, provided_level=heading_level + 1))
         lines.append("")
         signature = get_function_signature(node)
         lines.append("```python")
@@ -301,13 +295,6 @@ def process_file(file_path, package_dir):
     """
     Process a single Python file to extract its documentation as markdown text.
     If the file is an __init__.py, also extract its __all__.
-
-    Args:
-        file_path (str): The path to the Python (.py) file.
-        package_dir (str): The root package directory (used for computing module name).
-
-    Returns:
-        str: The markdown-formatted documentation extracted from the file.
     """
     try:
         with open(file_path, "r", encoding="utf8") as f:
@@ -318,13 +305,15 @@ def process_file(file_path, package_dir):
         return ""
 
     module_name = get_module_name(file_path, package_dir)
-    md_lines = []
-    # If the file is the root __init__.py, set the  level to 0
-    if module_name == Path(package_dir).name:
+    package_name = os.path.basename(os.path.abspath(package_dir))
+    # Use heading level 1 for the root package; otherwise, indent based on the dot count.
+    if module_name == package_name:
         heading_level = 1
     else:
-        heading_level = 2
-    md_lines.extend(add_header(module_name, level=heading_level))
+        heading_level = 1 + module_name.count(".")
+
+    md_lines = []
+    md_lines.extend(add_header(module_name, provided_level=heading_level))
     md_lines.append("")
 
     if os.path.basename(file_path) == "__init__.py":
@@ -368,7 +357,6 @@ def crawl(directory):
     final_lines.append("# Documentation")
     final_lines.append("")
     final_lines.extend(generate_toc())
-    final_lines.extend(generate_exports_section())
     final_lines.append(docs_content)
 
     return "\n".join(final_lines)
@@ -376,55 +364,17 @@ def crawl(directory):
 
 def generate_toc():
     """
-    Generate a Markdown-formatted Table of Contents based on the collected headers.
-
-    Returns:
-        list of str: Lines for the Table of Contents.
+    Generate a Markdown-formatted Table of Contents.
+    The TOC uses the stored full name (to compute indentation based on the number of dots)
+    while displaying only the stem name.
     """
     lines = []
     lines.append("## Table of Contents")
     lines.append("")
-    for level, header_text, anchor in toc_entries:
-        header_text = f"`{header_text}`"
-        indent = "  " * (level - 1)
-        lines.append(f"{indent}- [{header_text}](#{anchor})")
+    for full_name, display_name, anchor in toc_entries:
+        indent = "  " * full_name.count(".")
+        lines.append(f"{indent}- [`{display_name}`](#{anchor})")
     lines.append("")
-    return lines
-
-
-def generate_exports_section():
-    """
-    Generate a Markdown section listing __all__ exports for modules that define it.
-    Each module and export is linked to its respective section.
-
-    Returns:
-        list of str: Lines for the Exports section.
-    """
-    lines = []
-    if exports_by_module:
-        lines.append("## Exports")
-        lines.append("")
-        for module in sorted(exports_by_module.keys()):
-            module_anchor = None
-            for lvl, header_text, anchor in toc_entries:
-                if header_text == module:
-                    module_anchor = anchor
-                    break
-            if module_anchor is None:
-                module_anchor = make_anchor(module)
-            lines.append(f"- [`{module}`](#{module_anchor}):")
-            for export in sorted(exports_by_module[module]):
-                export_anchor = None
-                for lvl, header_text, anchor in toc_entries:
-                    if header_text == f"{module}.{export}" or header_text.endswith(
-                        f".{export}"
-                    ):
-                        export_anchor = anchor
-                        break
-                if export_anchor is None:
-                    export_anchor = make_anchor(f"{module}.{export}")
-                lines.append(f"  - [`{export}`](#{export_anchor})")
-        lines.append("")
     return lines
 
 

@@ -46,5 +46,6 @@ def test_generated_markdown(generated_markdown, docs_file):
                 generated_markdown.splitlines(keepends=True),
             )
         )
-        print("".join(diff), end="")
+        # print("".join(diff), end="")
+        print(generated_markdown)
         raise AssertionError("Generated markdown does not match expected content.")
