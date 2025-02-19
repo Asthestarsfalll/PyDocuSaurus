@@ -205,11 +205,15 @@ def format_docstring(docstring):
         lines.append("")
         for param in parsed.params:
             type_part = f" (*{param.type_name.strip()}*)" if param.type_name else ""
-            lines.append(f"- `{param.arg_name.strip()}`{type_part}: {param.description.strip()}")
+            lines.append(
+                f"- `{param.arg_name.strip()}`{type_part}: {param.description.strip()}"
+            )
     if parsed.returns:
         lines.append("")
         type_part = (
-            f" (*{parsed.returns.type_name.strip()}*)" if parsed.returns.type_name else ""
+            f" (*{parsed.returns.type_name.strip()}*)"
+            if parsed.returns.type_name
+            else ""
         )
         lines.append(f"**Returns:**{type_part} {parsed.returns.description.strip()}")
     if parsed.raises:
@@ -218,7 +222,9 @@ def format_docstring(docstring):
         lines.append("")
         for exc in parsed.raises:
             type_part = f" (*{exc.type_name.strip()}*)" if exc.type_name.strip() else ""
-            lines.append(f"- `{exc.type_name.strip()}`{type_part}: {exc.description.strip()}")
+            lines.append(
+                f"- `{exc.type_name.strip()}`{type_part}: {exc.description.strip()}"
+            )
     return "\n".join(lines)
 
 

@@ -19,9 +19,9 @@ build-backend = "pdm.backend"
 distribution = true
 
 [tool.pdm.scripts]
-autoflake = "autoflake --remove-all-unused-imports --in-place --recursive src/markupdown/ tests/"
-black = "black src/markupdown/ tests/"
-isort = "isort src/markupdown/ tests/"
+autoflake = "autoflake --remove-all-unused-imports --in-place --recursive src/python_docstring_markdown/ tests/"
+black = "black src/python_docstring_markdown/ tests/"
+isort = "isort src/python_docstring_markdown/ tests/"
 style = { composite = ["black", "isort", "autoflake"] }
 test = "pytest"
 
@@ -36,7 +36,7 @@ fail-under = 7
 max-line-length = 120
 
 [tool.pyright]
-include = ["src/markupdown/"]
+include = ["src/python_docstring_markdown/"]
 pythonPlatform = "All"
 
 [dependency-groups]

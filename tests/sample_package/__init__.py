@@ -12,6 +12,4 @@ Available modules:
 __version__ = "0.1.0"
 __all__ = ["core", "utils", "models"]
 
-from . import core
-from . import utils
-from . import models
+from . import core, models, utils
