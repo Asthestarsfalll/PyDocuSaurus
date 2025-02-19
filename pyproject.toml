@@ -1,0 +1,19 @@
+[project]
+name = "python-docstring-markdown"
+version = "0.1.0"
+description = "Generates Markdown documentation from Python module dosctrings"
+authors = [
+    {name = "Chris Riccomini", email = "criccomini@apache.org"},
+]
+dependencies = []
+requires-python = ">=3.9"
+readme = "README.md"
+license = {text = "CC-0"}
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+
+[tool.pdm]
+distribution = true
