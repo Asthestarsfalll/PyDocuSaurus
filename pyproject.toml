@@ -18,8 +18,33 @@ build-backend = "pdm.backend"
 [tool.pdm]
 distribution = true
 
+[tool.pdm.scripts]
+autoflake = "autoflake --remove-all-unused-imports --in-place --recursive src/markupdown/ tests/"
+black = "black src/markupdown/ tests/"
+isort = "isort src/markupdown/ tests/"
+style = { composite = ["black", "isort", "autoflake"] }
+test = "pytest"
+
+[tool.isort]
+profile = "black"
+case_sensitive = true
+
+[tool.pylint.master]
+fail-under = 7
+
+[tool.pylint.messages_control]
+max-line-length = 120
+
+[tool.pyright]
+include = ["src/markupdown/"]
+pythonPlatform = "All"
 
 [dependency-groups]
 dev = [
     "pytest>=8.3.4",
+    "black>=25.1.0",
+    "isort>=6.0.0",
+    "pylint>=3.3.4",
+    "pyright>=1.1.394",
+    "autoflake>=2.3.1",
 ]
