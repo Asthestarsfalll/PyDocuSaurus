@@ -37,6 +37,10 @@ jobs:
       - name: Install tomlkit
         run: pip install update-toml
 
+      # Set up self
+      - name: Install python_docstring_markdown
+        run: pip install .
+
       # Generate documentation
       - name: Generate documentation
         run: python -m python_docstring_markdown src/python_docstring_markdown DOCUMENTATION.md
