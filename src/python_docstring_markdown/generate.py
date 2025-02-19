@@ -20,6 +20,7 @@ import argparse
 import ast
 import os
 import re
+from pathlib import Path
 
 import docstring_parser  # Requires: pip install docstring-parser
 
@@ -265,7 +266,7 @@ def extract_docstrings_from_node(node, parent_qualname, heading_level=2):
 
     if isinstance(node, ast.ClassDef):
         qname = f"{parent_qualname}.{node.name}" if parent_qualname else node.name
-        lines.extend(add_header(qname, level=heading_level))
+        lines.extend(add_header(qname, level=heading_level + 1))
         lines.append("")
         class_doc = ast.get_docstring(node)
         if class_doc:
@@ -280,7 +281,7 @@ def extract_docstrings_from_node(node, parent_qualname, heading_level=2):
 
     if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
         qname = f"{parent_qualname}.{node.name}" if parent_qualname else node.name
-        lines.extend(add_header(qname, level=heading_level))
+        lines.extend(add_header(qname, level=heading_level + 1))
         lines.append("")
         signature = get_function_signature(node)
         lines.append("```python")
@@ -318,7 +319,12 @@ def process_file(file_path, package_dir):
 
     module_name = get_module_name(file_path, package_dir)
     md_lines = []
-    md_lines.extend(add_header(module_name, level=1))
+    # If the file is the root __init__.py, set the  level to 0
+    if module_name == Path(package_dir).name:
+        heading_level = 1
+    else:
+        heading_level = 2
+    md_lines.extend(add_header(module_name, level=heading_level))
     md_lines.append("")
 
     if os.path.basename(file_path) == "__init__.py":
@@ -335,15 +341,17 @@ def process_file(file_path, package_dir):
 
 def crawl(directory):
     """
-    Recursively crawl a directory, process each Python file, and concatenate
-    their markdown documentation.
+    Recursively crawl a directory, process each Python file, and generate
+    the complete markdown documentation.
 
     Args:
         directory (str): The root directory to crawl.
 
     Returns:
-        str: The combined markdown documentation for the entire package.
+        str: The complete markdown documentation for the entire package,
+             including table of contents and exports section.
     """
+    # Process all Python files
     all_docs = []
     for root, _, files in os.walk(directory):
         for file in sorted(files):
@@ -353,7 +361,17 @@ def crawl(directory):
                 file_docs = process_file(file_path, directory)
                 if file_docs:
                     all_docs.append(file_docs)
-    return "\n".join(all_docs)
+    docs_content = "\n".join(all_docs)
+
+    # Generate the complete documentation
+    final_lines = []
+    final_lines.append("# Documentation")
+    final_lines.append("")
+    final_lines.extend(generate_toc())
+    final_lines.extend(generate_exports_section())
+    final_lines.append(docs_content)
+
+    return "\n".join(final_lines)
 
 
 def generate_toc():
@@ -418,19 +436,10 @@ def main():
     parser.add_argument("output_file", help="Path to the output Markdown file")
     args = parser.parse_args()
 
-    docs_content = crawl(args.package_dir)
-
-    final_lines = []
-    final_lines.append("# Documentation")
-    final_lines.append("")
-    final_lines.extend(generate_toc())
-    final_lines.extend(generate_exports_section())
-    final_lines.append(docs_content)
-    final_content = "\n".join(final_lines)
-
     try:
+        content = crawl(args.package_dir)
         with open(args.output_file, "w", encoding="utf8") as f:
-            f.write(final_content)
+            f.write(content)
         print(
             f"Documentation successfully generated and saved to '{args.output_file}'."
         )

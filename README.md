@@ -51,8 +51,7 @@ with open("docs/api.md", "w") as f:
 
 ## Documentation
 
-`python-docstring-markdown`'s [DOCUMENTATION.md](DOCUMENTATION.md) file is generated from `python-docstring-markdown` 😎.
-Look at it to see example Markdown output as well as more information on library usage.
+See the [DOCUMENTATION.md](DOCUMENTATION.md) file for more information. It also serves as an example of how the documentation is generated.
 
 ## Contributing
 

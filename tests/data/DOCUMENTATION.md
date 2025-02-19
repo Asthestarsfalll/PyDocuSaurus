@@ -1,3 +1,36 @@
+# Documentation
+
+## Table of Contents
+
+- [`sample_package`](#sample-package)
+  - [`core`](#core)
+    - [`core.DataProcessor`](#core-dataprocessor)
+      - [`core.DataProcessor.__init__`](#core-dataprocessor-init)
+      - [`core.DataProcessor.Config`](#core-dataprocessor-config)
+        - [`core.DataProcessor.Config.__init__`](#core-dataprocessor-config-init)
+        - [`core.DataProcessor.Config.update`](#core-dataprocessor-config-update)
+      - [`core.DataProcessor.process`](#core-dataprocessor-process)
+      - [`core.DataProcessor._transform`](#core-dataprocessor-transform)
+    - [`core.batch_process`](#core-batch-process)
+  - [`models`](#models)
+    - [`models.BaseModel`](#models-basemodel)
+      - [`models.BaseModel.to_dict`](#models-basemodel-to-dict)
+    - [`models.User`](#models-user)
+      - [`models.User.__init__`](#models-user-init)
+      - [`models.User.to_dict`](#models-user-to-dict)
+  - [`utils`](#utils)
+    - [`utils.load_json`](#utils-load-json)
+    - [`utils.validate_data`](#utils-validate-data)
+    - [`utils.ValidationError`](#utils-validationerror)
+      - [`utils.ValidationError.__init__`](#utils-validationerror-init)
+
+## Exports
+
+- [`sample_package`](#sample-package):
+  - [`core`](#sample-package-core)
+  - [`models`](#sample-package-models)
+  - [`utils`](#sample-package-utils)
+
 <a id="sample-package"></a>
 # `sample_package`
 
@@ -12,7 +45,7 @@ Available modules:
     - models: Data models with Numpydoc-style docstrings
 
 <a id="core"></a>
-# `core`
+## `core`
 
 Core functionality module using Google-style docstrings.
 
@@ -20,14 +53,14 @@ This module demonstrates Google-style docstrings with various Python constructs
 including nested classes, methods, and functions.
 
 <a id="core-dataprocessor"></a>
-## `core.DataProcessor`
+### `core.DataProcessor`
 
 Main data processing class.
 
 This class demonstrates nested class definitions and various method types.
 
 <a id="core-dataprocessor-init"></a>
-### `core.DataProcessor.__init__`
+#### `core.DataProcessor.__init__`
 
 ```python
 def __init__(self, name: str, config: Optional[Dict[str, Any]]):
@@ -41,14 +74,14 @@ Initialize the DataProcessor.
 - `config`: Optional configuration dictionary
 
 <a id="core-dataprocessor-config"></a>
-### `core.DataProcessor.Config`
+#### `core.DataProcessor.Config`
 
 Nested configuration class.
 
 This demonstrates nested class documentation.
 
 <a id="core-dataprocessor-config-init"></a>
-#### `core.DataProcessor.Config.__init__`
+##### `core.DataProcessor.Config.__init__`
 
 ```python
 def __init__(self):
@@ -57,7 +90,7 @@ def __init__(self):
 Initialize Config object.
 
 <a id="core-dataprocessor-config-update"></a>
-#### `core.DataProcessor.Config.update`
+##### `core.DataProcessor.Config.update`
 
 ```python
 def update(self, settings: Dict[str, Any]) -> None:
@@ -70,7 +103,7 @@ Update configuration settings.
 - `settings`: Dictionary of settings to update
 
 <a id="core-dataprocessor-process"></a>
-### `core.DataProcessor.process`
+#### `core.DataProcessor.process`
 
 ```python
 def process(self, data: List[Any]) -> List[Any]:
@@ -89,7 +122,7 @@ Process the input data.
 - (*ValueError*) If data is empty
 
 <a id="core-dataprocessor-transform"></a>
-### `core.DataProcessor._transform`
+#### `core.DataProcessor._transform`
 
 ```python
 def _transform(self, item: Any) -> Any:
@@ -104,7 +137,7 @@ Internal method to transform a single item.
 **Returns:** Transformed item
 
 <a id="core-batch-process"></a>
-## `core.batch_process`
+### `core.batch_process`
 
 ```python
 def batch_process(processor: DataProcessor, items: List[Any]) -> Dict[str, List[Any]]:
@@ -123,14 +156,14 @@ This is a module-level function demonstrating Google-style docstrings.
 - 'errors': List of items that failed processing
 
 <a id="models"></a>
-# `models`
+## `models`
 
 Models module using Numpydoc-style docstrings.
 
 This module demonstrates Numpydoc-style docstrings with data model classes.
 
 <a id="models-basemodel"></a>
-## `models.BaseModel`
+### `models.BaseModel`
 
 Base model class for all data models.
 
@@ -140,7 +173,7 @@ Base model class for all data models.
 - `created_at` (*datetime*): Timestamp when the model was created
 
 <a id="models-basemodel-to-dict"></a>
-### `models.BaseModel.to_dict`
+#### `models.BaseModel.to_dict`
 
 ```python
 def to_dict(self) -> Dict[str, Any]:
@@ -151,7 +184,7 @@ Convert model to dictionary.
 **Returns:** (*Dict[str, Any]*) Dictionary representation of the model
 
 <a id="models-user"></a>
-## `models.User`
+### `models.User`
 
 User model representing system users.
 
@@ -163,14 +196,14 @@ User model representing system users.
 - `active` (*bool*): Whether the user is active, by default True
 
 <a id="models-user-init"></a>
-### `models.User.__init__`
+#### `models.User.__init__`
 
 ```python
 def __init__(self, id: str, username: str, email: str, active: bool):
 ```
 
 <a id="models-user-to-dict"></a>
-### `models.User.to_dict`
+#### `models.User.to_dict`
 
 ```python
 def to_dict(self) -> Dict[str, Any]:
@@ -181,14 +214,14 @@ Convert user to dictionary.
 **Returns:** (*Dict[str, Any]*) Dictionary containing all user fields
 
 <a id="utils"></a>
-# `utils`
+## `utils`
 
 Utility functions module using ReST-style docstrings.
 
 This module demonstrates ReST-style docstrings with various utility functions.
 
 <a id="utils-load-json"></a>
-## `utils.load_json`
+### `utils.load_json`
 
 ```python
 def load_json(filepath: str) -> Dict[str, Any]:
@@ -208,7 +241,7 @@ Load and parse a JSON file.
 - (*json.JSONDecodeError*) If the file contains invalid JSON
 
 <a id="utils-validate-data"></a>
-## `utils.validate_data`
+### `utils.validate_data`
 
 ```python
 def validate_data(data: Any, schema: Dict[str, Any]) -> List[str]:
@@ -229,7 +262,7 @@ and types of the data.
 **Returns:** List of validation errors, empty if valid
 
 <a id="utils-validationerror"></a>
-## `utils.ValidationError`
+### `utils.ValidationError`
 
 Custom exception for validation errors.
 
@@ -242,7 +275,7 @@ Example::
     raise ValidationError("Invalid data", ["field1 is required"])
 
 <a id="utils-validationerror-init"></a>
-### `utils.ValidationError.__init__`
+#### `utils.ValidationError.__init__`
 
 ```python
 def __init__(self, message: str, errors: List[str]):
