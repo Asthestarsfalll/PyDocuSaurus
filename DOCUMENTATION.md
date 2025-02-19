@@ -3,36 +3,30 @@
 ## Table of Contents
 
 - [`python_docstring_markdown`](#python-docstring-markdown)
-  - [`__main__`](#main)
-  - [`generate`](#generate)
-    - [`generate.make_anchor`](#generate-make-anchor)
-    - [`generate.add_header`](#generate-add-header)
-    - [`generate.get_module_name`](#generate-get-module-name)
-    - [`generate.extract_all_from_ast`](#generate-extract-all-from-ast)
-    - [`generate.get_function_signature`](#generate-get-function-signature)
-    - [`generate.format_docstring`](#generate-format-docstring)
-    - [`generate.extract_docstrings_from_node`](#generate-extract-docstrings-from-node)
-    - [`generate.process_file`](#generate-process-file)
-    - [`generate.crawl`](#generate-crawl)
-    - [`generate.generate_toc`](#generate-generate-toc)
-    - [`generate.generate_exports_section`](#generate-generate-exports-section)
-    - [`generate.main`](#generate-main)
-
-## Exports
-
-- [`python_docstring_markdown`](#python-docstring-markdown):
-  - [`crawl`](#generate-crawl)
+  - [`__main__`](#python-docstring-markdown-main)
+  - [`generate`](#python-docstring-markdown-generate)
+    - [`make_anchor`](#python-docstring-markdown-generate-make-anchor)
+    - [`add_header`](#python-docstring-markdown-generate-add-header)
+    - [`get_module_name`](#python-docstring-markdown-generate-get-module-name)
+    - [`extract_all_from_ast`](#python-docstring-markdown-generate-extract-all-from-ast)
+    - [`get_function_signature`](#python-docstring-markdown-generate-get-function-signature)
+    - [`format_docstring`](#python-docstring-markdown-generate-format-docstring)
+    - [`extract_docstrings_from_node`](#python-docstring-markdown-generate-extract-docstrings-from-node)
+    - [`process_file`](#python-docstring-markdown-generate-process-file)
+    - [`crawl`](#python-docstring-markdown-generate-crawl)
+    - [`generate_toc`](#python-docstring-markdown-generate-generate-toc)
+    - [`main`](#python-docstring-markdown-generate-main)
 
 <a id="python-docstring-markdown"></a>
 # `python_docstring_markdown`
 
 
-<a id="main"></a>
-# `__main__`
+<a id="python-docstring-markdown-main"></a>
+## `__main__`
 
 
-<a id="generate"></a>
-# `generate`
+<a id="python-docstring-markdown-generate"></a>
+## `generate`
 
 generate.py
 
@@ -47,10 +41,9 @@ Additional features:
   - Headers have descriptive HTML anchors derived from their dotted names.
   - For each function/method, its signature is included with type hints (if present) and its return type.
   - Autodetects docstring formats (Google-style, NumPy-style, etc.) and reformats them into Markdown.
-  - The Exports section builds links to the documented sections by matching the actual headers.
 
-<a id="generate-make-anchor"></a>
-## `generate.make_anchor`
+<a id="python-docstring-markdown-generate-make-anchor"></a>
+### `make_anchor`
 
 ```python
 def make_anchor(text):
@@ -60,44 +53,41 @@ Create a slug for the anchor by removing formatting,
 
 lower-casing, and replacing non-alphanumeric characters with hyphens.
 
-<a id="generate-add-header"></a>
-## `generate.add_header`
+<a id="python-docstring-markdown-generate-add-header"></a>
+### `add_header`
 
 ```python
-def add_header(header_text, level):
+def add_header(full_header_text, provided_level):
 ```
 
 Create a markdown header with a unique, descriptive anchor and record it for the TOC.
 
+Instead of printing the full dotted name, only the stem (last segment) is used
+for display.
+
 **Args:**
 
-- `header_text` (*str*): The header text (expected to be a fully qualified dotted name).
-- `level` (*int*): The markdown header level (1 for h1, 2 for h2, etc.)
+- `full_header_text` (*str*): The fully qualified dotted name.
+- `provided_level` (*int*): The markdown header level to use.
 
 **Returns:** (*list of str*) Markdown lines for the header (including an HTML anchor).
 
-<a id="generate-get-module-name"></a>
-## `generate.get_module_name`
+<a id="python-docstring-markdown-generate-get-module-name"></a>
+### `get_module_name`
 
 ```python
 def get_module_name(file_path, package_dir):
 ```
 
-Convert a file path to a dotted module name relative to package_dir.
+Convert a file path to a dotted module name relative to package_dir,
 
-For example, if package_dir is '/path/to/src' and file_path is
-'/path/to/src/foo/bar/baz.py', the returned module name is 'foo.bar.baz'.
+including the package’s base name.
+For example, if package_dir is '/path/to/sample_package' and file_path is
+'/path/to/sample_package/core.py', the returned module name is 'sample_package.core'.
 For __init__.py, the "__init__" part is dropped.
 
-**Args:**
-
-- `file_path` (*str*): The absolute or relative file path.
-- `package_dir` (*str*): The root package directory.
-
-**Returns:** (*str*) The dotted module name.
-
-<a id="generate-extract-all-from-ast"></a>
-## `generate.extract_all_from_ast`
+<a id="python-docstring-markdown-generate-extract-all-from-ast"></a>
+### `extract_all_from_ast`
 
 ```python
 def extract_all_from_ast(tree):
@@ -111,8 +101,8 @@ Look for an assignment to __all__ in the module AST and extract its value.
 
 **Returns:** (*list of str or None*) The list of exported names if found, otherwise None.
 
-<a id="generate-get-function-signature"></a>
-## `generate.get_function_signature`
+<a id="python-docstring-markdown-generate-get-function-signature"></a>
+### `get_function_signature`
 
 ```python
 def get_function_signature(node):
@@ -131,8 +121,8 @@ Note: Default values are not included.
 **Returns:** (*str*) A signature string, e.g.:
 def func(arg1: int, arg2: str, *args: Any, **kwargs: Any) -> bool:
 
-<a id="generate-format-docstring"></a>
-## `generate.format_docstring`
+<a id="python-docstring-markdown-generate-format-docstring"></a>
+### `format_docstring`
 
 ```python
 def format_docstring(docstring):
@@ -146,8 +136,8 @@ Parse a docstring and reformat its components as Markdown.
 
 **Returns:** (*str*) The formatted Markdown version of the docstring.
 
-<a id="generate-extract-docstrings-from-node"></a>
-## `generate.extract_docstrings_from_node`
+<a id="python-docstring-markdown-generate-extract-docstrings-from-node"></a>
+### `extract_docstrings_from_node`
 
 ```python
 def extract_docstrings_from_node(node, parent_qualname, heading_level):
@@ -166,8 +156,8 @@ Docstrings are parsed (as Google-style) and reformatted into Markdown.
 
 **Returns:** (*list of str*) Lines of markdown documenting the node.
 
-<a id="generate-process-file"></a>
-## `generate.process_file`
+<a id="python-docstring-markdown-generate-process-file"></a>
+### `process_file`
 
 ```python
 def process_file(file_path, package_dir):
@@ -177,56 +167,38 @@ Process a single Python file to extract its documentation as markdown text.
 
 If the file is an __init__.py, also extract its __all__.
 
-**Args:**
-
-- `file_path` (*str*): The path to the Python (.py) file.
-- `package_dir` (*str*): The root package directory (used for computing module name).
-
-**Returns:** (*str*) The markdown-formatted documentation extracted from the file.
-
-<a id="generate-crawl"></a>
-## `generate.crawl`
+<a id="python-docstring-markdown-generate-crawl"></a>
+### `crawl`
 
 ```python
 def crawl(directory):
 ```
 
-Recursively crawl a directory, process each Python file, and concatenate
+Recursively crawl a directory, process each Python file, and generate
 
-their markdown documentation.
+the complete markdown documentation.
 
 **Args:**
 
 - `directory` (*str*): The root directory to crawl.
 
-**Returns:** (*str*) The combined markdown documentation for the entire package.
+**Returns:** (*str*) The complete markdown documentation for the entire package,
+including table of contents and exports section.
 
-<a id="generate-generate-toc"></a>
-## `generate.generate_toc`
+<a id="python-docstring-markdown-generate-generate-toc"></a>
+### `generate_toc`
 
 ```python
 def generate_toc():
 ```
 
-Generate a Markdown-formatted Table of Contents based on the collected headers.
+Generate a Markdown-formatted Table of Contents.
 
-**Returns:** (*list of str*) Lines for the Table of Contents.
+The TOC uses the stored full name (to compute indentation based on the number of dots)
+while displaying only the stem name.
 
-<a id="generate-generate-exports-section"></a>
-## `generate.generate_exports_section`
-
-```python
-def generate_exports_section():
-```
-
-Generate a Markdown section listing __all__ exports for modules that define it.
-
-Each module and export is linked to its respective section.
-
-**Returns:** (*list of str*) Lines for the Exports section.
-
-<a id="generate-main"></a>
-## `generate.main`
+<a id="python-docstring-markdown-generate-main"></a>
+### `main`
 
 ```python
 def main():
