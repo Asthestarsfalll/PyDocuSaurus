@@ -5,7 +5,7 @@ description = "Generates Markdown documentation from Python module dosctrings"
 authors = [
     {name = "Chris Riccomini", email = "criccomini@apache.org"},
 ]
-dependencies = ["docstring-parser-fork>=0.0.12"]
+dependencies = ["docstring-parser-fork>=0.0.12", "pytest>=8.3.4"]
 requires-python = ">=3.9"
 readme = "README.md"
 license = {text = "CC-0"}
@@ -17,3 +17,8 @@ build-backend = "pdm.backend"
 
 [tool.pdm]
 distribution = true
+
+[dependency-groups]
+dev = [
+    "mistune>=3.1.1",
+]

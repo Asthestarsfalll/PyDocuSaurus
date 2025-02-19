@@ -1,3 +1,3 @@
-from .core import crawl_directory
+from .generate import crawl
 
-__all__ = ["crawl_directory"]
+__all__ = ["crawl"]
