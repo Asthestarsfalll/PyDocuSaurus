@@ -1,12 +1,12 @@
 # python-docstring-markdown
 
-A Python tool that generates Markdown documentation from Python module docstrings. It automatically creates a table of contents, tracks module exports (`__all__`), and docstrings into clean Markdown.
+A Python module and CLI that walks a Python package/directory and outputs a Markdown file from all docstrings in the package.
 
 ## Features
 
+- Crawls the packages, modules, classes, functions, and methods using the `ast` module
+- Auto-detects ReST, Google, Numpydoc-style and Epydoc docstrings using [`docstring-parser-fork`](https://pypi.org/project/docstring-parser-fork/)
 - Generates a table of contents with anchor links
-- Auto-detects ReST, Google, Numpydoc-style and Epydoc docstrings
-- Includes function signatures with type hints
 - Tracks and documents module exports (`__all__`)
 - Preserves module hierarchy in documentation
 - Handles nested classes and functions
@@ -47,20 +47,9 @@ with open("docs/api.md", "w") as f:
     f.write(docs_content)
 ```
 
-## Documentation Format
+## Contributing
 
-The generated documentation includes:
-
-1. A table of contents with links to all sections
-2. An exports section listing all `__all__` declarations
-3. Module documentation organized hierarchically
-4. Function signatures with type hints
-5. Formatted docstrings preserving:
-   - Description
-   - Arguments
-   - Returns
-   - Raises
-   - Examples
+I welcome feedback and contributions!
 
 ## License
 
