@@ -2,6 +2,8 @@
 
 A Python module and CLI that walks a Python package/directory and outputs a Markdown file from all docstrings in the package.
 
+Tools like mkdocs and readthedocs are overkill for many small Python projects. This project exists to provide a simple way to generate Markdown documentation that can be stored alongside your code in Github.
+
 ## Features
 
 - Crawls the packages, modules, classes, functions, and methods using the `ast` module
@@ -46,6 +48,11 @@ docs_content = crawl("./src/my_package")
 with open("docs/api.md", "w") as f:
     f.write(docs_content)
 ```
+
+## Documentation
+
+`python-docstring-markdown`'s [DOCUMENTATION.md](DOCUMENTATION.md) file is generated from `python-docstring-markdown` 😎.
+Look at it to see example Markdown output as well as more information on library usage.
 
 ## Contributing
 
