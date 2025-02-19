@@ -189,41 +189,36 @@ def format_docstring(docstring):
     Returns:
         str: The formatted Markdown version of the docstring.
     """
-    try:
-        parsed = docstring_parser.parse(
-            docstring, style=docstring_parser.DocstringStyle.AUTO
-        )
-    except Exception as e:
-        # If parsing fails, return the original docstring.
-        return docstring
+    parsed = docstring_parser.parse(
+        docstring, style=docstring_parser.DocstringStyle.AUTO
+    )
 
     lines = []
     if parsed.short_description:
-        lines.append(parsed.short_description)
-        lines.append("")
+        lines.append(parsed.short_description.strip())
     if parsed.long_description:
-        lines.append(parsed.long_description)
         lines.append("")
+        lines.append(parsed.long_description.strip())
     if parsed.params:
+        lines.append("")
         lines.append("**Args:**")
         lines.append("")
         for param in parsed.params:
-            type_part = f" (*{param.type_name}*)" if param.type_name else ""
-            lines.append(f"- `{param.arg_name}`{type_part}: {param.description}")
-        lines.append("")
+            type_part = f" (*{param.type_name.strip()}*)" if param.type_name else ""
+            lines.append(f"- `{param.arg_name.strip()}`{type_part}: {param.description.strip()}")
     if parsed.returns:
-        type_part = (
-            f" (*{parsed.returns.type_name}*)" if parsed.returns.type_name else ""
-        )
-        lines.append(f"**Returns:**{type_part} {parsed.returns.description}")
         lines.append("")
+        type_part = (
+            f" (*{parsed.returns.type_name.strip()}*)" if parsed.returns.type_name else ""
+        )
+        lines.append(f"**Returns:**{type_part} {parsed.returns.description.strip()}")
     if parsed.raises:
+        lines.append("")
         lines.append("**Raises:**")
         lines.append("")
         for exc in parsed.raises:
-            type_part = f" (*{exc.type_name}*)" if exc.type_name else ""
-            lines.append(f"- `{exc.type_name}`{type_part}: {exc.description}")
-        lines.append("")
+            type_part = f" (*{exc.type_name.strip()}*)" if exc.type_name.strip() else ""
+            lines.append(f"- `{exc.type_name.strip()}`{type_part}: {exc.description.strip()}")
     return "\n".join(lines)
 
 
@@ -252,6 +247,8 @@ def extract_docstrings_from_node(node, parent_qualname, heading_level=2):
             lines.extend(
                 extract_docstrings_from_node(child, parent_qualname, heading_level)
             )
+        # Remove final trainling line to prevent \n\n
+        lines.pop()
         return lines
 
     if isinstance(node, ast.ClassDef):

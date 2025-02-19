@@ -22,7 +22,6 @@ including nested classes, methods, and functions.
 <a id="core-dataprocessor"></a>
 ## `core.DataProcessor`
 
-
 Main data processing class.
 
 This class demonstrates nested class definitions and various method types.
@@ -84,7 +83,6 @@ Process the input data.
 - `data`: List of data items to process
 
 **Returns:** Processed data items
-    
 
 **Raises:**
 
