@@ -258,8 +258,9 @@ def extract_docstrings_from_node(node, parent_qualname, heading_level=2):
             lines.extend(
                 extract_docstrings_from_node(child, parent_qualname, heading_level)
             )
-        # Remove final trainling line to prevent \n\n
-        lines.pop()
+        if lines:
+            # Remove final trainling line to prevent \n\n
+            lines.pop()
         return lines
 
     if isinstance(node, ast.ClassDef):
