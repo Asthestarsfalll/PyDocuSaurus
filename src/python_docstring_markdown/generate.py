@@ -27,7 +27,7 @@ toc_entries = []  # List of tuples: (level, header_text, anchor)
 anchor_usage = {}  # To ensure unique anchors based on header text
 
 
-def make_anchor(text):
+def _make_anchor(text):
     """
     Create a slug for the anchor by removing formatting,
     lower-casing, and replacing non-alphanumeric characters with hyphens.
@@ -37,7 +37,7 @@ def make_anchor(text):
     return text.strip("-")
 
 
-def add_header(full_header_text, provided_level):
+def _add_header(full_header_text, provided_level):
     """
     Create a markdown header with a unique, descriptive anchor and record it for the TOC.
     Instead of printing the full dotted name, only the stem (last segment) is used
@@ -51,7 +51,7 @@ def add_header(full_header_text, provided_level):
         list of str: Markdown lines for the header (including an HTML anchor).
     """
     display_name = full_header_text.split(".")[-1]
-    anchor_base = make_anchor(full_header_text)
+    anchor_base = _make_anchor(full_header_text)
     count = anchor_usage.get(anchor_base, 0)
     if count:
         anchor = f"{anchor_base}-{count+1}"
@@ -64,7 +64,7 @@ def add_header(full_header_text, provided_level):
     return [f'<a id="{anchor}"></a>', f'{"#" * provided_level} `{display_name}`']
 
 
-def get_module_name(file_path, package_dir):
+def _get_module_name(file_path, package_dir):
     """
     Convert a file path to a dotted module name relative to package_dir,
     including the package’s base name.
@@ -84,7 +84,7 @@ def get_module_name(file_path, package_dir):
     return package_name + "." + ".".join(parts)
 
 
-def extract_all_from_ast(tree):
+def _extract_all_from_ast(tree):
     """
     Look for an assignment to __all__ in the module AST and extract its value.
 
@@ -113,7 +113,7 @@ def extract_all_from_ast(tree):
     return None
 
 
-def get_function_signature(node):
+def _get_function_signature(node):
     """
     Build a string representation of the function/method signature,
     including parameter type hints and the return type.
@@ -173,7 +173,7 @@ def get_function_signature(node):
     return signature
 
 
-def format_docstring(docstring):
+def _format_docstring(docstring):
     """
     Parse a docstring and reformat its components as Markdown.
 
@@ -227,7 +227,7 @@ def format_docstring(docstring):
     return "\n".join(lines)
 
 
-def extract_docstrings_from_node(node, parent_qualname, heading_level=2):
+def _extract_docstrings_from_node(node, parent_qualname, heading_level=2):
     """
     Recursively extract docstrings from an AST node using fully qualified dotted names.
     For functions and methods, the signature (with type hints) is included.
@@ -246,11 +246,11 @@ def extract_docstrings_from_node(node, parent_qualname, heading_level=2):
     if isinstance(node, ast.Module):
         module_doc = ast.get_docstring(node)
         if module_doc:
-            lines.append(format_docstring(module_doc))
+            lines.append(_format_docstring(module_doc))
             lines.append("")
         for child in node.body:
             lines.extend(
-                extract_docstrings_from_node(child, parent_qualname, heading_level)
+                _extract_docstrings_from_node(child, parent_qualname, heading_level)
             )
         if lines:
             # Remove final trainling line to prevent \n\n
@@ -263,16 +263,16 @@ def extract_docstrings_from_node(node, parent_qualname, heading_level=2):
             return lines
 
         qname = f"{parent_qualname}.{node.name}" if parent_qualname else node.name
-        lines.extend(add_header(qname, provided_level=heading_level + 1))
+        lines.extend(_add_header(qname, provided_level=heading_level + 1))
         lines.append("")
         class_doc = ast.get_docstring(node)
         if class_doc:
-            lines.append(format_docstring(class_doc))
+            lines.append(_format_docstring(class_doc))
             lines.append("")
         for child in node.body:
             if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
                 lines.extend(
-                    extract_docstrings_from_node(child, qname, heading_level + 1)
+                    _extract_docstrings_from_node(child, qname, heading_level + 1)
                 )
         return lines
 
@@ -282,23 +282,23 @@ def extract_docstrings_from_node(node, parent_qualname, heading_level=2):
             return lines
 
         qname = f"{parent_qualname}.{node.name}" if parent_qualname else node.name
-        lines.extend(add_header(qname, provided_level=heading_level + 1))
+        lines.extend(_add_header(qname, provided_level=heading_level + 1))
         lines.append("")
-        signature = get_function_signature(node)
+        signature = _get_function_signature(node)
         lines.append("```python")
         lines.append(signature)
         lines.append("```")
         lines.append("")
         func_doc = ast.get_docstring(node)
         if func_doc:
-            lines.append(format_docstring(func_doc))
+            lines.append(_format_docstring(func_doc))
             lines.append("")
         return lines
 
     return lines
 
 
-def process_file(file_path, package_dir):
+def _process_file(file_path, package_dir):
     """
     Process a single Python file to extract its documentation as markdown text.
     If the file is an __init__.py, also extract its __all__.
@@ -311,7 +311,7 @@ def process_file(file_path, package_dir):
         print(f"Error processing {file_path}: {e}")
         return ""
 
-    module_name = get_module_name(file_path, package_dir)
+    module_name = _get_module_name(file_path, package_dir)
     package_name = os.path.basename(os.path.abspath(package_dir))
     # Use heading level 1 for the root package; otherwise, indent based on the dot count.
     if module_name == package_name:
@@ -320,14 +320,14 @@ def process_file(file_path, package_dir):
         heading_level = 1 + module_name.count(".")
 
     md_lines = []
-    md_lines.extend(add_header(module_name, provided_level=heading_level))
+    md_lines.extend(_add_header(module_name, provided_level=heading_level))
     md_lines.append("")
     md_lines.extend(
-        extract_docstrings_from_node(tree, parent_qualname=module_name, heading_level=2)
+        _extract_docstrings_from_node(tree, parent_qualname=module_name, heading_level=2)
     )
     md_lines.append("")
     if os.path.basename(file_path) == "__init__.py":
-        if exports := extract_all_from_ast(tree):
+        if exports := _extract_all_from_ast(tree):
             md_lines.append("**Exports:**")
             md_lines.append("")
             for export in exports:
@@ -355,7 +355,7 @@ def crawl(directory):
             if file.endswith(".py"):
                 file_path = os.path.join(root, file)
                 print(f"Processing {file_path}...")
-                file_docs = process_file(file_path, directory)
+                file_docs = _process_file(file_path, directory)
                 if file_docs:
                     all_docs.append(file_docs)
     docs_content = "\n".join(all_docs)
@@ -364,13 +364,13 @@ def crawl(directory):
     final_lines = []
     final_lines.append("# Documentation")
     final_lines.append("")
-    final_lines.extend(generate_toc())
+    final_lines.extend(_generate_toc())
     final_lines.append(docs_content)
 
     return "\n".join(final_lines)
 
 
-def generate_toc():
+def _generate_toc():
     """
     Generate a Markdown-formatted Table of Contents.
     The TOC uses the stored full name (to compute indentation based on the number of dots)
