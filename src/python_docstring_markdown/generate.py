@@ -320,7 +320,9 @@ def _process_file(file_path, package_dir):
     md_lines.extend(_add_header(module_name, provided_level=heading_level))
     md_lines.append("")
     md_lines.extend(
-        _extract_docstrings_from_node(tree, parent_qualname=module_name, heading_level=2)
+        _extract_docstrings_from_node(
+            tree, parent_qualname=module_name, heading_level=2
+        )
     )
     md_lines.append("")
     if os.path.basename(file_path) == "__init__.py":
