@@ -23,10 +23,10 @@ issues = "https://github.com/criccomini/python-docstring-markdown/issues"
 distribution = true
 
 [tool.pdm.scripts]
-autoflake = "autoflake --remove-all-unused-imports --in-place --recursive src/python_docstring_markdown/ tests/"
-black = "black src/python_docstring_markdown/ tests/"
-isort = "isort src/python_docstring_markdown/ tests/"
-style = { composite = ["black", "isort", "autoflake"] }
+run-autoflake = "autoflake --remove-all-unused-imports --in-place --recursive src/python_docstring_markdown/ tests/"
+run-black = "black src/python_docstring_markdown/ tests/"
+run-isort = "isort src/python_docstring_markdown/ tests/"
+style = { composite = ["run-black", "run-isort", "run-autoflake"] }
 test = "pytest"
 
 [tool.isort]
