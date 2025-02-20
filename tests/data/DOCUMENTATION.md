@@ -54,6 +54,12 @@ Available modules:
     - utils: Utility functions with ReST-style docstrings
     - models: Data models with Numpydoc-style docstrings
 
+**Exports:**
+
+- `core`
+- `utils`
+- `models`
+
 <a id="sample-package-core"></a>
 ## `core`
 
@@ -293,6 +299,12 @@ This module showcases various Python features including:
     - Async functions and context managers
     - Descriptors and metaclasses
     - Mixed docstring styles (Google, ReST, and Numpydoc)
+
+**Exports:**
+
+- `advanced_types`
+- `protocols`
+- `descriptors`
 
 <a id="sample-package-exotic-advanced-types"></a>
 ### `advanced_types`

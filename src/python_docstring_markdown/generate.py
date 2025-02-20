@@ -25,7 +25,6 @@ import docstring_parser
 # Global variables for the Table of Contents, anchors, and export info
 toc_entries = []  # List of tuples: (level, header_text, anchor)
 anchor_usage = {}  # To ensure unique anchors based on header text
-exports_by_module = {}  # Mapping: module_name -> list of exported names (from __all__)
 
 
 def make_anchor(text):
@@ -323,16 +322,17 @@ def process_file(file_path, package_dir):
     md_lines = []
     md_lines.extend(add_header(module_name, provided_level=heading_level))
     md_lines.append("")
-
-    if os.path.basename(file_path) == "__init__.py":
-        exported = extract_all_from_ast(tree)
-        if exported is not None:
-            exports_by_module[module_name] = exported
-
     md_lines.extend(
         extract_docstrings_from_node(tree, parent_qualname=module_name, heading_level=2)
     )
     md_lines.append("")
+    if os.path.basename(file_path) == "__init__.py":
+        if exports := extract_all_from_ast(tree):
+            md_lines.append("**Exports:**")
+            md_lines.append("")
+            for export in exports:
+                md_lines.append(f"- `{export}`")
+            md_lines.append("")
     return "\n".join(md_lines)
 
 
@@ -403,3 +403,7 @@ def main():
         )
     except Exception as e:
         print(f"Error writing to output file: {e}")
+
+
+if __name__ == "__main__":
+    main()
