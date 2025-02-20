@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   release:
-    name: Release Markupdown
+    name: Release python-docstring-markdown
     runs-on: ubuntu-latest
 
     steps:
