@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 """
-generate.py
-
 This script crawls a Python package directory, extracts docstrings from modules,
 classes, functions, and methods using the `ast` module, and writes the results
 to a single Markdown file.
@@ -9,7 +7,6 @@ to a single Markdown file.
 Additional features:
   - Module names are shown as dotted names (e.g. "foo.bar.baz") rather than file paths.
   - For each __init__.py, if an __all__ is defined, an Exports section is generated.
-  - The Table of Contents lists fully qualified names (e.g. foo.bar.MyClass.my_method) without prefixes.
   - Headers have descriptive HTML anchors derived from their dotted names.
   - For each function/method, its signature is included with type hints (if present) and its return type.
   - Autodetects docstring formats (Google-style, NumPy-style, etc.) and reformats them into Markdown.
@@ -22,8 +19,8 @@ import re
 
 import docstring_parser
 
-# Global variables for the Table of Contents, anchors, and export info
-toc_entries = []  # List of tuples: (level, header_text, anchor)
+# Global variables for the Table of Contents and anchors
+toc_entries = []  # List of tuples: (full_header_text, display_name, anchor)
 anchor_usage = {}  # To ensure unique anchors based on header text
 
 
