@@ -1,9 +1,11 @@
 import difflib
 import os
+from pathlib import Path
 
 import pytest
 
-from python_docstring_markdown import crawl
+from python_docstring_markdown import crawl_package
+from python_docstring_markdown.generate import MarkdownRenderer
 
 
 @pytest.fixture(scope="session")
@@ -25,12 +27,19 @@ def docs_file(test_dir):
 
 
 @pytest.fixture(scope="session")
-def generated_markdown(sample_package_dir, docs_file):
+def generated_markdown(sample_package_dir):
     """Generate and load the documentation content."""
-    # Generate the documentation
-    content = crawl(sample_package_dir)
+    # Creat a temporary file path
+    import tempfile
 
-    yield content
+    with tempfile.NamedTemporaryFile() as tmp_file:
+        tmp_docs_file = Path(tmp_file.name)
+        package = crawl_package(Path(sample_package_dir))
+        renderer = MarkdownRenderer()
+        renderer.render(package, tmp_docs_file)
+        generated_markdown = tmp_docs_file.read_text(encoding="utf8")
+
+    yield generated_markdown
 
 
 def test_generated_markdown(generated_markdown, docs_file):
@@ -46,5 +55,5 @@ def test_generated_markdown(generated_markdown, docs_file):
                 generated_markdown.splitlines(keepends=True),
             )
         )
-        print("".join(diff), end="")
+        print("\n".join(diff))
         raise AssertionError("Generated markdown does not match expected content.")
