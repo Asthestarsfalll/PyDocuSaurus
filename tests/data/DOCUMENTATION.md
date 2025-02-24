@@ -2,19 +2,19 @@
 
 ## Table of Contents
 
-- 🅼 [sample_package](#sample_package)
-- 🅼 [sample_package.core](#sample_package-core)
-- 🅼 [sample_package.exotic](#sample_package-exotic)
-- 🅼 [sample_package.exotic.advanced_types](#sample_package-exotic-advanced_types)
-- 🅼 [sample_package.exotic.deep](#sample_package-exotic-deep)
-- 🅼 [sample_package.exotic.deep.recursive](#sample_package-exotic-deep-recursive)
-- 🅼 [sample_package.exotic.descriptors](#sample_package-exotic-descriptors)
-- 🅼 [sample_package.exotic.protocols](#sample_package-exotic-protocols)
-- 🅼 [sample_package.models](#sample_package-models)
-- 🅼 [sample_package.utils](#sample_package-utils)
+- 🅼 [sample\_package](#sample_package)
+- 🅼 [sample\_package\.core](#sample_package-core)
+- 🅼 [sample\_package\.exotic](#sample_package-exotic)
+- 🅼 [sample\_package\.exotic\.advanced\_types](#sample_package-exotic-advanced_types)
+- 🅼 [sample\_package\.exotic\.deep](#sample_package-exotic-deep)
+- 🅼 [sample\_package\.exotic\.deep\.recursive](#sample_package-exotic-deep-recursive)
+- 🅼 [sample\_package\.exotic\.descriptors](#sample_package-exotic-descriptors)
+- 🅼 [sample\_package\.exotic\.protocols](#sample_package-exotic-protocols)
+- 🅼 [sample\_package\.models](#sample_package-models)
+- 🅼 [sample\_package\.utils](#sample_package-utils)
 
 <a name="sample_package"></a>
-## 🅼 sample_package
+## 🅼 sample\_package
 
 Sample package for testing docstring to markdown conversion\.
 
@@ -35,7 +35,7 @@ Available modules:
 - 🅼 [`utils`](#sample_package-utils)
 - 🅼 [`models`](#sample_package-models)
 <a name="sample_package-core"></a>
-## 🅼 sample_package.core
+## 🅼 sample\_package\.core
 
 Core functionality module using Google-style docstrings\.
 
@@ -43,7 +43,7 @@ This module demonstrates Google-style docstrings with various Python constructs
 including nested classes, methods, and functions\.
 
 - **Functions:**
-  - 🅵 [batch_process](#sample_package-core-batch_process)
+  - 🅵 [batch\_process](#sample_package-core-batch_process)
 - **Classes:**
   - 🅲 [DataProcessor](#sample_package-core-DataProcessor)
     - 🅲 [Config](#sample_package-core-DataProcessor-Config)
@@ -51,7 +51,7 @@ including nested classes, methods, and functions\.
 ### Functions
 
 <a name="sample_package-core-batch_process"></a>
-### 🅵 sample_package.core.batch_process
+### 🅵 sample\_package\.core\.batch\_process
 
 ```python
 def batch_process(processor: DataProcessor, items: List[Any]) -> Dict[str, List[Any]]:
@@ -74,7 +74,7 @@ This is a module-level function demonstrating Google-style docstrings\.
 ### Classes
 
 <a name="sample_package-core-DataProcessor"></a>
-### 🅲 sample_package.core.DataProcessor
+### 🅲 sample\_package\.core\.DataProcessor
 
 ```python
 class DataProcessor:
@@ -92,7 +92,7 @@ This class demonstrates nested class definitions and various method types\.
 **Functions:**
 
 <a name="sample_package-core-DataProcessor-__init__"></a>
-#### 🅵 sample_package.core.DataProcessor.__init__
+#### 🅵 sample\_package\.core\.DataProcessor\.\_\_init\_\_
 
 ```python
 def __init__(self, name: str, config: Optional[Dict[str, Any]] = None):
@@ -105,7 +105,7 @@ Initialize the DataProcessor\.
 - **name**: Name of the processor
 - **config**: Optional configuration dictionary
 <a name="sample_package-core-DataProcessor-process"></a>
-#### 🅵 sample_package.core.DataProcessor.process
+#### 🅵 sample\_package\.core\.DataProcessor\.process
 
 ```python
 def process(self, data: List[Any]) -> List[Any]:
@@ -126,7 +126,7 @@ Process the input data\.
 - **ValueError**: If data is empty
 
 <a name="sample_package-core-DataProcessor-Config"></a>
-### 🅲 sample_package.core.DataProcessor.Config
+### 🅲 sample\_package\.core\.DataProcessor\.Config
 
 ```python
 class Config:
@@ -139,7 +139,7 @@ This demonstrates nested class documentation\.
 **Functions:**
 
 <a name="sample_package-core-DataProcessor-Config-__init__"></a>
-#### 🅵 sample_package.core.DataProcessor.Config.__init__
+#### 🅵 sample\_package\.core\.DataProcessor\.Config\.\_\_init\_\_
 
 ```python
 def __init__(self):
@@ -147,7 +147,7 @@ def __init__(self):
 
 Initialize Config object\.
 <a name="sample_package-core-DataProcessor-Config-update"></a>
-#### 🅵 sample_package.core.DataProcessor.Config.update
+#### 🅵 sample\_package\.core\.DataProcessor\.Config\.update
 
 ```python
 def update(self, settings: Dict[str, Any]) -> None:
@@ -159,7 +159,7 @@ Update configuration settings\.
 
 - **settings**: Dictionary of settings to update
 <a name="sample_package-exotic"></a>
-## 🅼 sample_package.exotic
+## 🅼 sample\_package\.exotic
 
 Exotic module demonstrating advanced Python features and docstring styles\.
 
@@ -178,7 +178,7 @@ This module showcases various Python features including:
 - 🅼 [`protocols`](#sample_package-exotic-protocols)
 - 🅼 [`descriptors`](#sample_package-exotic-descriptors)
 <a name="sample_package-exotic-advanced_types"></a>
-## 🅼 sample_package.exotic.advanced_types
+## 🅼 sample\_package\.exotic\.advanced\_types
 
 Advanced type hints and generic types demonstration\.
 
@@ -194,13 +194,13 @@ complex typing scenarios\.
 ### Constants
 
 <a name="sample_package-exotic-advanced_types-T"></a>
-### 🆅 sample_package.exotic.advanced_types.T
+### 🆅 sample\_package\.exotic\.advanced\_types\.T
 
 ```python
 T = TypeVar('T')
 ```
 <a name="sample_package-exotic-advanced_types-S"></a>
-### 🆅 sample_package.exotic.advanced_types.S
+### 🆅 sample\_package\.exotic\.advanced\_types\.S
 
 ```python
 S = TypeVar('S', bound='Serializable')
@@ -209,7 +209,7 @@ S = TypeVar('S', bound='Serializable')
 ### Classes
 
 <a name="sample_package-exotic-advanced_types-Serializable"></a>
-### 🅲 sample_package.exotic.advanced_types.Serializable
+### 🅲 sample\_package\.exotic\.advanced\_types\.Serializable
 
 ```python
 class Serializable(Generic[T]):
@@ -230,13 +230,13 @@ T
 **Functions:**
 
 <a name="sample_package-exotic-advanced_types-Serializable-__init__"></a>
-#### 🅵 sample_package.exotic.advanced_types.Serializable.__init__
+#### 🅵 sample\_package\.exotic\.advanced\_types\.Serializable\.\_\_init\_\_
 
 ```python
 def __init__(self, value: T):
 ```
 <a name="sample_package-exotic-advanced_types-Serializable-serialize"></a>
-#### 🅵 sample_package.exotic.advanced_types.Serializable.serialize
+#### 🅵 sample\_package\.exotic\.advanced\_types\.Serializable\.serialize
 
 ```python
 def serialize(self) -> dict:
@@ -248,9 +248,9 @@ Convert the container to a dictionary\.
 
 - `dict`: A dictionary containing the value and metadata
 <a name="sample_package-exotic-deep"></a>
-## 🅼 sample_package.exotic.deep
+## 🅼 sample\_package\.exotic\.deep
 <a name="sample_package-exotic-deep-recursive"></a>
-## 🅼 sample_package.exotic.deep.recursive
+## 🅼 sample\_package\.exotic\.deep\.recursive
 
 A little recursive module using ReST-style docstrings\.
 
@@ -262,7 +262,7 @@ This module demonstrates ReST-style docstrings with various utility functions\.
 ### Classes
 
 <a name="sample_package-exotic-deep-recursive-Serializable"></a>
-### 🅲 sample_package.exotic.deep.recursive.Serializable
+### 🅲 sample\_package\.exotic\.deep\.recursive\.Serializable
 
 ```python
 class Serializable:
@@ -271,7 +271,7 @@ class Serializable:
 **Functions:**
 
 <a name="sample_package-exotic-deep-recursive-Serializable-__init__"></a>
-#### 🅵 sample_package.exotic.deep.recursive.Serializable.__init__
+#### 🅵 sample\_package\.exotic\.deep\.recursive\.Serializable\.\_\_init\_\_
 
 ```python
 def __init__(self, data: Dict[str, Any]) -> None:
@@ -283,7 +283,7 @@ Initialize a Serializable object\.
 
 - **data**: Data to serialize
 <a name="sample_package-exotic-deep-recursive-Serializable-serialize"></a>
-#### 🅵 sample_package.exotic.deep.recursive.Serializable.serialize
+#### 🅵 sample\_package\.exotic\.deep\.recursive\.Serializable\.serialize
 
 ```python
 def serialize(self) -> Dict[str, Any]:
@@ -295,7 +295,7 @@ Serialize the object to a dictionary\.
 
 - `Dict[str, Any]`: Dictionary representation of the object
 <a name="sample_package-exotic-descriptors"></a>
-## 🅼 sample_package.exotic.descriptors
+## 🅼 sample\_package\.exotic\.descriptors
 
 Descriptors and metaclasses demonstration\.
 
@@ -308,7 +308,7 @@ with proper documentation\.
 ### Classes
 
 <a name="sample_package-exotic-descriptors-ValidatedField"></a>
-### 🅲 sample_package.exotic.descriptors.ValidatedField
+### 🅲 sample\_package\.exotic\.descriptors\.ValidatedField
 
 ```python
 class ValidatedField:
@@ -324,13 +324,13 @@ A descriptor that validates its values\.
 **Functions:**
 
 <a name="sample_package-exotic-descriptors-ValidatedField-__init__"></a>
-#### 🅵 sample_package.exotic.descriptors.ValidatedField.__init__
+#### 🅵 sample\_package\.exotic\.descriptors\.ValidatedField\.\_\_init\_\_
 
 ```python
 def __init__(self, validator, error_message):
 ```
 <a name="sample_package-exotic-descriptors-ValidatedField-__get__"></a>
-#### 🅵 sample_package.exotic.descriptors.ValidatedField.__get__
+#### 🅵 sample\_package\.exotic\.descriptors\.ValidatedField\.\_\_get\_\_
 
 ```python
 def __get__(self, instance, owner):
@@ -347,7 +347,7 @@ Get the field value\.
 
 - The field value
 <a name="sample_package-exotic-descriptors-ValidatedField-__set__"></a>
-#### 🅵 sample_package.exotic.descriptors.ValidatedField.__set__
+#### 🅵 sample\_package\.exotic\.descriptors\.ValidatedField\.\_\_set\_\_
 
 ```python
 def __set__(self, instance, value):
@@ -364,7 +364,7 @@ Set and validate the field value\.
 
 - **ValueError**: If the value fails validation
 <a name="sample_package-exotic-protocols"></a>
-## 🅼 sample_package.exotic.protocols
+## 🅼 sample\_package\.exotic\.protocols
 
 Protocol and structural subtyping examples\.
 
@@ -377,7 +377,7 @@ and abstract base classes\.
 ### Classes
 
 <a name="sample_package-exotic-protocols-Loggable"></a>
-### 🅲 sample_package.exotic.protocols.Loggable
+### 🅲 sample\_package\.exotic\.protocols\.Loggable
 
 ```python
 class Loggable(Protocol):
@@ -388,7 +388,7 @@ Protocol for objects that can be logged\.
 **Functions:**
 
 <a name="sample_package-exotic-protocols-Loggable-log_format"></a>
-#### 🅵 sample_package.exotic.protocols.Loggable.log_format
+#### 🅵 sample\_package\.exotic\.protocols\.Loggable\.log\_format
 
 ```python
 def log_format(self) -> str:
@@ -400,7 +400,7 @@ Format the object for logging\.
 
 - A string representation of the object
 <a name="sample_package-models"></a>
-## 🅼 sample_package.models
+## 🅼 sample\_package\.models
 
 Models module using Numpydoc-style docstrings\.
 
@@ -413,7 +413,7 @@ This module demonstrates Numpydoc-style docstrings with data model classes\.
 ### Classes
 
 <a name="sample_package-models-BaseModel"></a>
-### 🅲 sample_package.models.BaseModel
+### 🅲 sample\_package\.models\.BaseModel
 
 ```python
 class BaseModel:
@@ -429,7 +429,7 @@ Base model class for all data models\.
 **Functions:**
 
 <a name="sample_package-models-BaseModel-to_dict"></a>
-#### 🅵 sample_package.models.BaseModel.to_dict
+#### 🅵 sample\_package\.models\.BaseModel\.to\_dict
 
 ```python
 def to_dict(self) -> Dict[str, Any]:
@@ -441,7 +441,7 @@ Convert model to dictionary\.
 
 - `Dict[str, Any]`: Dictionary representation of the model
 <a name="sample_package-models-User"></a>
-### 🅲 sample_package.models.User
+### 🅲 sample\_package\.models\.User
 
 ```python
 class User(BaseModel):
@@ -452,7 +452,7 @@ User model representing system users\.
 **Functions:**
 
 <a name="sample_package-models-User-__init__"></a>
-#### 🅵 sample_package.models.User.__init__
+#### 🅵 sample\_package\.models\.User\.\_\_init\_\_
 
 ```python
 def __init__(self, id: str, username: str, email: str, active: bool = True):
@@ -471,7 +471,7 @@ def __init__(self, id: str, username: str, email: str, active: bool = True):
 - **email** (`str`): User's email address
 - **active** (`bool`): User's active status
 <a name="sample_package-models-User-to_dict"></a>
-#### 🅵 sample_package.models.User.to_dict
+#### 🅵 sample\_package\.models\.User\.to\_dict
 
 ```python
 def to_dict(self) -> Dict[str, Any]:
@@ -483,22 +483,22 @@ Convert user to dictionary\.
 
 - `Dict[str, Any]`: Dictionary containing all user fields
 <a name="sample_package-utils"></a>
-## 🅼 sample_package.utils
+## 🅼 sample\_package\.utils
 
 Utility functions module using ReST-style docstrings\.
 
 This module demonstrates ReST-style docstrings with various utility functions\.
 
 - **Functions:**
-  - 🅵 [load_json](#sample_package-utils-load_json)
-  - 🅵 [validate_data](#sample_package-utils-validate_data)
+  - 🅵 [load\_json](#sample_package-utils-load_json)
+  - 🅵 [validate\_data](#sample_package-utils-validate_data)
 - **Classes:**
   - 🅲 [ValidationError](#sample_package-utils-ValidationError)
 
 ### Functions
 
 <a name="sample_package-utils-load_json"></a>
-### 🅵 sample_package.utils.load_json
+### 🅵 sample\_package\.utils\.load\_json
 
 ```python
 def load_json(filepath: str) -> Dict[str, Any]:
@@ -519,7 +519,7 @@ Load and parse a JSON file\.
 - **FileNotFoundError**: If the file doesn't exist
 - **json.JSONDecodeError**: If the file contains invalid JSON
 <a name="sample_package-utils-validate_data"></a>
-### 🅵 sample_package.utils.validate_data
+### 🅵 sample\_package\.utils\.validate\_data
 
 ```python
 def validate_data(data: Any, schema: Dict[str, Any]) -> List[str]:
@@ -544,7 +544,7 @@ and types of the data\.
 ### Classes
 
 <a name="sample_package-utils-ValidationError"></a>
-### 🅲 sample_package.utils.ValidationError
+### 🅲 sample\_package\.utils\.ValidationError
 
 ```python
 class ValidationError(Exception):
@@ -563,7 +563,7 @@ Example::
 **Functions:**
 
 <a name="sample_package-utils-ValidationError-__init__"></a>
-#### 🅵 sample_package.utils.ValidationError.__init__
+#### 🅵 sample\_package\.utils\.ValidationError\.\_\_init\_\_
 
 ```python
 def __init__(self, message: str, errors: List[str]):
