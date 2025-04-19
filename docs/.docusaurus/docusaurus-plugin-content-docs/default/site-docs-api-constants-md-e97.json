@@ -1,0 +1,26 @@
+{
+  "id": "api/constants",
+  "title": "constants",
+  "description": "TOC",
+  "source": "@site/docs/api/constants.md",
+  "sourceDirName": "api",
+  "slug": "/api/constants",
+  "permalink": "/docs/api/constants",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/docs/api/constants.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "constants"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "API Reference",
+    "permalink": "/docs/api/"
+  },
+  "next": {
+    "title": "generate",
+    "permalink": "/docs/api/generate"
+  }
+}

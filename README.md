@@ -1,4 +1,7 @@
-# python-docstring-markdown
+# PyDocuSaurus
+
+
+Adapted from [python-docstring-markdown](https://github.com/criccomini/python-docstring-markdown)
 
 A Python module and CLI that walks a Python package/directory and outputs a Markdown file from all docstrings in the package.
 
@@ -7,8 +10,9 @@ Tools like mkdocs and readthedocs are overkill for many small Python projects. T
 ## Features
 
 - Crawls the packages, modules, classes, functions, and methods using the `ast` module
+- Generate the structured Markdown documentation for all docstrings in the package
 - Auto-detects ReST, Google, Numpydoc-style and Epydoc docstrings using [`docstring-parser-fork`](https://pypi.org/project/docstring-parser-fork/)
-- Generates a table of contents with anchor links
+- Generates a table of contents with links
 - Tracks and documents module exports (`__all__`)
 - Preserves module hierarchy in documentation
 - Handles nested classes and functions
@@ -16,7 +20,7 @@ Tools like mkdocs and readthedocs are overkill for many small Python projects. T
 ## Installation
 
 ```bash
-pip install python-docstring-markdown
+pip install PyDocuSaurus
 ```
 
 ## Usage
@@ -24,16 +28,16 @@ pip install python-docstring-markdown
 ### Command Line
 
 ```bash
-python -m python_docstring_markdown <package_dir> <output_file>
+pdocs <package_dir> <output_dir>
 ```
 
 Arguments:
 - `package_dir`: Path to your Python package directory
-- `output_file`: Path where the Markdown documentation file will be saved
+- `output_dir`: Path where the Markdown documentation file will be saved
 
 Example:
 ```bash
-python -m python_docstring_markdown ./src/my_package docs/api.md
+pdocs ./src/my_package docs/api/
 ```
 
 ### Python API

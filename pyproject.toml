@@ -1,14 +1,17 @@
 [project]
-name = "python-docstring-markdown"
-version = "0.3.1"
-description = "Generates Markdown documentation from Python module dosctrings"
+name = "PyDocuSaurus"
+version = "0.0.1"
+description = "Generates Docusaurus Style Markdown documentation from Python module dosctrings"
 authors = [
-    {name = "Chris Riccomini", email = "criccomini@apache.org"},
+    {name = "Asthestarsfalll"},
 ]
-dependencies = ["docstring-parser-fork>=0.0.12"]
+dependencies = ["docstring-parser-fork>=0.0.12", "astor>=0.8.1"]
 requires-python = ">=3.10"
 readme = "README.md"
 license = {text = "CC-0"}
+
+[project.scripts]
+pdocs = "PyDocuSaurus.generate:main"
 
 [build-system]
 requires = ["pdm-backend"]
@@ -21,27 +24,6 @@ issues = "https://github.com/criccomini/python-docstring-markdown/issues"
 
 [tool.pdm]
 distribution = true
-
-[tool.pdm.scripts]
-run-autoflake = "autoflake --remove-all-unused-imports --in-place --recursive src/python_docstring_markdown/ tests/"
-run-black = "black src/python_docstring_markdown/ tests/"
-run-isort = "isort src/python_docstring_markdown/ tests/"
-style = { composite = ["run-black", "run-isort", "run-autoflake"] }
-test = "pytest"
-
-[tool.isort]
-profile = "black"
-case_sensitive = true
-
-[tool.pylint.master]
-fail-under = 7
-
-[tool.pylint.messages_control]
-max-line-length = 120
-
-[tool.pyright]
-include = ["src/python_docstring_markdown/"]
-pythonPlatform = "All"
 
 [dependency-groups]
 dev = [
