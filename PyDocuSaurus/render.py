@@ -53,7 +53,8 @@ def handle_name_conflict(file_name: str, fq_name: str, with_ext: bool = False) -
 
 
 def colorize(docstring: str, color="red") -> str:
-    return f"[{docstring}](#{docstring.replace(' ', '')})"
+    return docstring
+    # return f"[{docstring}](#{docstring.replace(' ', '')})"
 
 
 # fmt: off
@@ -161,7 +162,8 @@ class MarkdownRenderer:
             lines.extend(self.render_docstring(module.docstring))
             lines.append("")
         if module.exports and add_toc:
-            lines.append(f"- **[Exports](#{module.fully_qualified_name}-exports)**")
+            # lines.append(f"- **[Exports](#{module.fully_qualified_name}-exports)**")
+            lines.append("- **[Exports](#exports)**")
         # Second-level table of contents for this module.
         if module.constants:
             lines.append("- **Attributes:**")
@@ -192,6 +194,10 @@ class MarkdownRenderer:
 
         if module.constants or module.functions or module.classes or module.exports:
             lines.append("")
+        else:
+            lines.clear()
+            lines.append("## No Contents Are Generated")
+            lines.append("")
 
         # Detailed sections.
         if module.constants:
@@ -217,8 +223,9 @@ class MarkdownRenderer:
             lines.append("")
             for exp in module.exports:
                 link = os.sep.join(module.fully_qualified_name.split(".")[-1:])
-                # link = handle_name_conflict(link, module.fully_qualified_name)
-                lines.append(f"- {MODULE_FLAG} [{escaped_markdown(exp)}](./{link})")
+                link = handle_name_conflict(link, module.fully_qualified_name)
+                # lines.append(f"- {MODULE_FLAG} [{escaped_markdown(exp)}](./{link})")
+                lines.append(f"- {MODULE_FLAG} {escaped_markdown(exp)}")
             lines.append("")
         lines.pop()
         return lines

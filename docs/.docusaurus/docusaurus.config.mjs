@@ -5,7 +5,7 @@
  */
 export default {
   "title": "PyDocuSaurus",
-  "tagline": "Generates Docusaurus Style Markdown documentation from Python module dosctrings",
+  "tagline": "Generates Docusaurus Style Markdown documentation from Python module docstrings",
   "favicon": "img/favicon.ico",
   "url": "https://onism.pydocusaurus.com",
   "baseUrl": "/",

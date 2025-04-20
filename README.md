@@ -3,9 +3,16 @@
 
 Adapted from [python-docstring-markdown](https://github.com/criccomini/python-docstring-markdown)
 
-A Python module and CLI that walks a Python package/directory and outputs a Markdown file from all docstrings in the package.
+A Python module and CLI that walks a Python package/directory and outputs a **Docusaurus Style** Markdown files from all docstrings in the package.
 
-Tools like mkdocs and readthedocs are overkill for many small Python projects. This project exists to provide a simple way to generate Markdown documentation that can be stored alongside your code in Github.
+
+## TODO
+
+- [ ] Fix the links in module exports
+- [ ] Colorize the parameters, returns and riaises item
+- [ ] Supports for other Docusaurus features
+- [ ] More configurable
+- [ ] Auto translation
 
 ## Features
 
@@ -16,6 +23,7 @@ Tools like mkdocs and readthedocs are overkill for many small Python projects. T
 - Tracks and documents module exports (`__all__`)
 - Preserves module hierarchy in documentation
 - Handles nested classes and functions
+- Docusaurus features supported, for instance, Admonitions(Note, Warning, Important and Tip), markdown metadata.
 
 ## Installation
 
@@ -34,28 +42,15 @@ pdocs <package_dir> <output_dir>
 Arguments:
 - `package_dir`: Path to your Python package directory
 - `output_dir`: Path where the Markdown documentation file will be saved
+- `--include-private`: Include private members in the documentation
 
 Example:
 ```bash
 pdocs ./src/my_package docs/api/
 ```
 
-### Python API
-
-```python
-from python_docstring_markdown import crawl
-
-# Generate documentation for a package
-docs_content = crawl("./src/my_package")
-
-# Save to a file
-with open("docs/api.md", "w") as f:
-    f.write(docs_content)
-```
-
 ## Documentation
 
-See the [DOCUMENTATION.md](DOCUMENTATION.md) file for more information. It also serves as an example of how the documentation is generated.
 
 ## Contributing
 
