@@ -18,4 +18,4 @@ title: API Reference
 
 ## Exports
 
-- 🅼 [crawl\_package](./PyDocuSaurus)
+- 🅼 crawl\_package

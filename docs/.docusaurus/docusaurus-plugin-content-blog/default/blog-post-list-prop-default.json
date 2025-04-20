@@ -1,4 +1,11 @@
 {
   "title": "Recent posts",
-  "items": []
+  "items": [
+    {
+      "title": "test",
+      "permalink": "/blog/test",
+      "unlisted": false,
+      "date": "2025-04-20T07:23:42.933Z"
+    }
+  ]
 }

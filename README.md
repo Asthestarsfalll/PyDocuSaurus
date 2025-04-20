@@ -13,6 +13,7 @@ A Python module and CLI that walks a Python package/directory and outputs a **Do
 - [ ] Supports for other Docusaurus features
 - [ ] More configurable
 - [ ] Auto translation
+- [ ] Add methods to class in toc
 
 ## Features
 

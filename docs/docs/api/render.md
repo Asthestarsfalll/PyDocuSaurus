@@ -6,6 +6,8 @@ title: render
 
 - **Attributes:**
 
+  - 🅰 [\_MARKDOWN\_CHARACTERS\_TO\_ESCAPE](#🅰-_markdown_characters_to_escape) - +!|")
+
 - **Functions:**
   - 🅵 [format\_code](#🅵-format_code)
   - 🅵 [format\_signature](#🅵-format_signature)
@@ -26,6 +28,16 @@ FLAG_MAPPING = {
     Class: CLASS_FLAG,
     Module: MODULE_FLAG,
 }
+```
+## 🅰 \_MARKDOWN\_CHARACTERS\_TO\_ESCAPE
+
+```python
+_MARKDOWN_CHARACTERS_TO_ESCAPE = set("\\`*_{}[]<>()#+.!|") #+!|")
+```
+## 🅰 \_MARKDOWN\_CHARACTERS\_TO\_ESCAPE\_SIMPLE
+
+```python
+_MARKDOWN_CHARACTERS_TO_ESCAPE_SIMPLE = set("\\`*__{}[]<>()#+!|")
 ```
 
 ## Functions

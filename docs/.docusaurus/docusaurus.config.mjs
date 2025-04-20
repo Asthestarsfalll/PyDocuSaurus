@@ -58,10 +58,14 @@ export default {
       },
       "items": [
         {
-          "type": "docSidebar",
-          "sidebarId": "tutorialSidebar",
-          "position": "left",
-          "label": "Tutorial"
+          "to": "/docs/api",
+          "label": "API Reference",
+          "position": "left"
+        },
+        {
+          "to": "/docs",
+          "label": "Tutorial",
+          "position": "left"
         },
         {
           "to": "/blog",
@@ -84,7 +88,7 @@ export default {
           "items": [
             {
               "label": "Tutorial",
-              "to": "/docs/intro"
+              "to": "/docs"
             }
           ]
         },

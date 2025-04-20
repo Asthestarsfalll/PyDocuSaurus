@@ -18,5 +18,9 @@
   "previous": {
     "title": "parse",
     "permalink": "/docs/api/parse"
+  },
+  "next": {
+    "title": "Tutorial",
+    "permalink": "/docs/"
   }
 }

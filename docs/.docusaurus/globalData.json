@@ -8,7 +8,7 @@
           "label": "Next",
           "isLast": true,
           "path": "/docs",
-          "mainDocId": "api/index",
+          "mainDocId": "index",
           "docs": [
             {
               "id": "api/constants",
@@ -38,6 +38,11 @@
             {
               "id": "api/render",
               "path": "/docs/api/render",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "index",
+              "path": "/docs/",
               "sidebar": "tutorialSidebar"
             }
           ],
