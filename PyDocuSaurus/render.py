@@ -171,9 +171,7 @@ class MarkdownRenderer:
                 lines.append(
                     "  " * 1
                     + f"- {ATTR_FLAG} [{escaped_markdown(const.name, False)}]({self.link(module, const)})"
-                    + f" - {const.comment}"
-                    if const.comment
-                    else ""
+                    + f" - {const.comment if const.comment else ''}"
                 )
         if module.functions:
             lines.append("- **Functions:**")
@@ -191,7 +189,6 @@ class MarkdownRenderer:
             lines.append("- **Classes:**")
             for cls in module.classes:
                 lines.extend(self.render_class_toc(module, cls, indent=1))
-
         if module.constants or module.functions or module.classes or module.exports:
             lines.append("")
         else:

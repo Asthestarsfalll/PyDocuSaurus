@@ -167,7 +167,8 @@ def parse_module_exports(module_ast: ast.Module) -> list[str]:
 def _get_comment_of_constants(code: str, line_number: int) -> str | None:
     lines = code.splitlines()
     comment = None
-    target = min(line_number + 5, len(lines))
+    target = min(line_number + 10, len(lines))
+    line_number -= 1
     while line_number < target:
         current_line = lines[line_number].strip()
         if "#" in current_line:
@@ -199,6 +200,7 @@ def parse_module_constants(
     for node in module_ast.body:
         if isinstance(node, (ast.Assign, ast.AnnAssign)):
             # Process ast.Assign nodes (may have multiple targets).
+
             if isinstance(node, ast.Assign):
                 for target in node.targets:
                     if (
