@@ -1,7 +1,7 @@
 {
   "id": "api/index",
   "title": "API Reference",
-  "description": "Table of Contents",
+  "description": "Flags:",
   "source": "@site/docs/api/index.md",
   "sourceDirName": "api",
   "slug": "/api/",

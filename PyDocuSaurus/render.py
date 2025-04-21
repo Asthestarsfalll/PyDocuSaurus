@@ -10,6 +10,7 @@ from .constants import (
     OBJECT_CACHE,
     FLAG_STR_MAPPING,
     UNKNOWN_FLAG,
+    METHOD_FLAG,
     FLAG_EXPLAIN,
     Return,
 )
@@ -193,7 +194,7 @@ class MarkdownRenderer:
                 lines.append(
                     "  " * 1
                     + f"- {ATTR_FLAG} [{escaped_markdown(const.name, False)}]({self.link(module, const)})"
-                    + (f" - {const.comment}" if const.comment else "")
+                    + (f" - {escaped_markdown(const.comment)}" if const.comment else "")
                 )
         if module.functions:
             lines.append("- **Functions:**")
@@ -224,6 +225,7 @@ class MarkdownRenderer:
             lines.append("")
             for const in module.constants:
                 lines.extend(self.render_constant(const, level=level + 1))
+                lines.append("")
             lines.append("")
         if module.functions:
             lines.append(f"{header_prefix}# Functions")
@@ -310,10 +312,12 @@ class MarkdownRenderer:
             lines.extend(self.render_docstring(cls.docstring))
             lines.append("")
         if cls.functions:
-            lines.append("**Functions:**")
+            # lines.append("**Functions:**")
             lines.append("")
             for func in cls.functions:
-                lines.extend(self.render_function(func, level=level + 1))
+                lines.extend(
+                    self.render_function(func, level=level + 1, flag=METHOD_FLAG)
+                )
             lines.append("")
         if cls.classes:
             # Flatten all nested classes in this class.
@@ -323,16 +327,14 @@ class MarkdownRenderer:
         lines.pop()
         return lines
 
-    def render_function(self, func: Function, level: int) -> list[str]:
+    def render_function(self, func: Function, level: int, flag=FUNC_FLAG) -> list[str]:
         """
         Render detailed documentation for a function/method including its signature and
         docstring details (parameters, returns, raises, etc.).
         """
         lines: list[str] = []
         header_prefix = "#" * level
-        lines.append(
-            f"{header_prefix} {FUNC_FLAG} {escaped_markdown(func.name, False)}"
-        )
+        lines.append(f"{header_prefix} {flag} {escaped_markdown(func.name, False)}")
         lines.append("")
         lines.append("```python")
         lines.append(format_signature(func.signature))

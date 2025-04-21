@@ -56,6 +56,7 @@ def parse_function(
     node: ast.FunctionDef | ast.AsyncFunctionDef,
     file_path: Path,
     parent: Class | Module,
+    type: str = "function",
 ) -> Function:
 ```
 
