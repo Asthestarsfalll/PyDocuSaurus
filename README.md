@@ -8,7 +8,7 @@ A Python module and CLI that walks a Python package/directory and outputs a **Do
 
 ## TODO
 
-- [ ] Fix the links in module exports
+- [x] Fix the links in module exports
 - [ ] Colorize the parameters, returns and riaises item
 - [ ] Supports for other Docusaurus features
 - [ ] More configurable

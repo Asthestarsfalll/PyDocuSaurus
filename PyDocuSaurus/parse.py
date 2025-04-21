@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 import ast
 from .models import Module, Class, Function, Constant
 from pathlib import Path
 import docstring_parser
 import astor
 from docstring_parser.google import DEFAULT_SECTIONS
-from .constants import DOCUSAURUS_SECTION
+from .constants import DOCUSAURUS_SECTION, OBJECT_CACHE
 
 DEFAULT_SECTIONS.extend(list(DOCUSAURUS_SECTION.values()))
 
@@ -86,12 +88,14 @@ def parse_function(
     node: ast.FunctionDef | ast.AsyncFunctionDef,
     file_path: Path,
     parent: Class | Module,
+    type: str = "function",
 ) -> Function:
     """Parse a function or method node into a Function dataclass instance."""
     signature = build_signature(node)
     raw_doc = ast.get_docstring(node)
     parsed_doc = docstring_parser.parse(raw_doc) if raw_doc else None
     fq_name = f"{parent.fully_qualified_name}.{node.name}"
+    OBJECT_CACHE[node.name][parent.fully_qualified_name] = type
     return Function(
         path=file_path,
         name=node.name,
@@ -114,6 +118,7 @@ def parse_class(
         signature = f"class {node.name}({bases}):"
     else:
         signature = f"class {node.name}:"
+    OBJECT_CACHE[node.name][fq_name] = "class"
     cls = Class(
         path=file_path,
         name=node.name,
@@ -128,7 +133,7 @@ def parse_class(
         if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)):
             if not should_include(child.name, include_private):
                 continue
-            method = parse_function(child, file_path, parent=cls)
+            method = parse_function(child, file_path, parent=cls, type="method")
             cls.functions.append(method)
         elif isinstance(child, ast.ClassDef):
             if not should_include(child.name, include_private):
@@ -205,8 +210,8 @@ def parse_module_constants(
                 for target in node.targets:
                     if (
                         isinstance(target, ast.Name)
-                        and target.id.isupper()
-                        and target.id != "__ALL__"
+                        # and target.id.isupper()
+                        and target.id.lower() != "__all__"
                         and should_include(target.id, include_private)
                     ):
                         type_annotation = None
@@ -224,6 +229,7 @@ def parse_module_constants(
                             comment=_get_comment_of_constants(code, node.lineno),
                         )
                         module.constants.append(constant)
+                        OBJECT_CACHE[target.id][fq_name] = "constant"
                         break
             # Process annotated assignments.
             elif isinstance(node, ast.AnnAssign):
@@ -249,6 +255,7 @@ def parse_module_constants(
                         comment=_get_comment_of_constants(code, node.lineno),
                     )
                     module.constants.append(constant)
+                    OBJECT_CACHE[node.target.id][fq_name] = "constant"
 
 
 def parse_module_functions(

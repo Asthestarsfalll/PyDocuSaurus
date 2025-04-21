@@ -7,6 +7,11 @@ from .constants import (
     FUNC_FLAG,
     ATTR_FLAG,
     DOCUSAURUS_SECTION,
+    OBJECT_CACHE,
+    FLAG_STR_MAPPING,
+    UNKNOWN_FLAG,
+    FLAG_EXPLAIN,
+    Return,
 )
 from .models import Package, Module, Constant, Class, Function, DocumentedItem
 from pathlib import Path
@@ -14,6 +19,7 @@ import os
 from collections import defaultdict
 from black import Mode, format_str
 import docstring_parser
+import inspect
 
 FLAG_MAPPING = {
     Constant: ATTR_FLAG,
@@ -23,6 +29,19 @@ FLAG_MAPPING = {
 }
 _MARKDOWN_CHARACTERS_TO_ESCAPE = set(r"\`*_{}[]<>()#+.!|")
 _MARKDOWN_CHARACTERS_TO_ESCAPE_SIMPLE = set(r"\`*__{}[]<>()#+!|")
+
+
+def check_type(obj):
+    if inspect.ismodule(obj):
+        return "module"
+    elif inspect.isclass(obj):
+        return "class"
+    elif inspect.ismethod(obj):
+        return "method"
+    elif inspect.isfunction(obj):
+        return "function"
+    else:
+        return "constant"
 
 
 def format_code(code: str, line_length: int = 80) -> str:
@@ -40,21 +59,27 @@ def format_signature(signature: str) -> str:
     return formatted_code.replace("pass", "").strip().strip("\n")
 
 
-def handle_name_conflict(file_name: str, fq_name: str, with_ext: bool = False) -> str:
-    if "." in file_name:
-        file_name = ".".join(file_name.split(".")[:-1])
-    file_name = file_name.replace("-", "_")
-    if "." in fq_name and file_name.split(os.sep)[-1] == fq_name.split(".")[-2]:
+def handle_name_conflict(fq_name: str, with_ext: bool = False) -> str:
+    split_names = fq_name.split(".")
+    file_name = os.sep.join(fq_name.split(".")[1:])
+    if len(split_names) > 2 and split_names[-1] == split_names[-2]:
         file_name = file_name + "_"
     if with_ext:
         file_name += ".md"
     file_name = file_name.replace("_", "-")
-    return file_name
+    return file_name.lower()
 
 
 def colorize(docstring: str, color="red") -> str:
     return docstring
     # return f"[{docstring}](#{docstring.replace(' ', '')})"
+
+
+def try_import_module(module_name: str):
+    try:
+        return __import__(module_name)
+    except ImportError:
+        raise None
 
 
 # fmt: off
@@ -83,15 +108,15 @@ class MarkdownRenderer:
         lines = [INDEX_TEMPLATE.format("API Reference")]
         lines.append(f"# `{package.name}`")
         lines.append("")
+        lines.append(FLAG_EXPLAIN)
         lines.append("## Table of Contents")
         lines.append("")
         for module in package.modules:
             if "." not in module.fully_qualified_name:
                 continue
-            link = f"{os.sep.join(module.fully_qualified_name.split('.')[1:]).replace('_', '-')}"
-            link = handle_name_conflict(link, module.fully_qualified_name)
+            link = handle_name_conflict(module.fully_qualified_name)
             lines.append(
-                f"- {MODULE_FLAG} [{escaped_markdown(module.fully_qualified_name)}](./{link})"
+                f"- {UNKNOWN_FLAG} [{escaped_markdown(module.fully_qualified_name)}](./{link})"
             )
         lines.append("")
         extra_lines = ""
@@ -99,7 +124,6 @@ class MarkdownRenderer:
             output_path.mkdir(parents=True, exist_ok=True)
             for module in package.modules:
                 levels = module.fully_qualified_name.split(".")
-                relative_path = ""
                 if len(levels) > 1:
                     relative_path = os.sep.join(levels[1:-1])
                 file_name = self.link(module)
@@ -109,18 +133,16 @@ class MarkdownRenderer:
                 module_output = INDEX_TEMPLATE.format(file_name[:-3]) + "\n".join(
                     module_lines
                 )
+                file_name = handle_name_conflict(module.fully_qualified_name, True)
                 if module.name == "__init__":
                     relative_path = os.sep.join(levels[1:])
                     if len(levels) > 1:
-                        file_name = "index.md"
+                        file_name = os.path.join(relative_path, "index.md")
                     else:
                         extra_lines = "\n".join(module_lines)
                         continue
                 (output_path / relative_path).mkdir(parents=True, exist_ok=True)
-                file_name = handle_name_conflict(
-                    file_name, module.fully_qualified_name, True
-                )
-                file_path = output_path / relative_path / file_name
+                file_path = output_path / file_name
                 file_path.write_text(module_output, encoding="utf8")
             # Write the index file table of contents linking to each module
             lines.append("")
@@ -171,7 +193,7 @@ class MarkdownRenderer:
                 lines.append(
                     "  " * 1
                     + f"- {ATTR_FLAG} [{escaped_markdown(const.name, False)}]({self.link(module, const)})"
-                    + f" - {const.comment if const.comment else ''}"
+                    + (f" - {const.comment}" if const.comment else "")
                 )
         if module.functions:
             lines.append("- **Functions:**")
@@ -218,11 +240,43 @@ class MarkdownRenderer:
         if module.exports:
             lines.append(f"{header_prefix}# Exports")
             lines.append("")
+            runtime_module = try_import_module(module.fully_qualified_name)
+            doc_base = module.fully_qualified_name.split(".")[0]
             for exp in module.exports:
-                link = os.sep.join(module.fully_qualified_name.split(".")[-1:])
-                link = handle_name_conflict(link, module.fully_qualified_name)
-                # lines.append(f"- {MODULE_FLAG} [{escaped_markdown(exp)}](./{link})")
-                lines.append(f"- {MODULE_FLAG} {escaped_markdown(exp)}")
+                cur_level = os.sep.join(module.fully_qualified_name.split(".")[1:])
+                link = None
+                if len(info := OBJECT_CACHE[exp]) == 1:
+                    link = list(info.keys())[0]
+                    export_type = list(info.values())[0]
+
+                elif (
+                    runtime_module
+                    and (runtime_exp := getattr(runtime_module, exp, Return))
+                    is not Return
+                ):
+                    export_type = check_type(runtime_exp)
+                    if export_type == "module":
+                        link = runtime_exp.__name__
+                    else:
+                        link = runtime_exp.__module__
+                if export_type in ["class", "constant"]:
+                    link = link.replace("." + exp, "")
+                if link and link.split(".")[0] == doc_base:
+                    link = handle_name_conflict(link)
+                    if export_type == "method":
+                        link = os.sep.join(link.split(os.sep)[:-1])
+                    if cur_level:
+                        link = link.replace(cur_level + os.sep, "")
+                    flag = FLAG_STR_MAPPING[export_type]
+                    if flag:
+                        flag += "-"
+                    if export_type != "module":
+                        link += f"#{flag}{exp.lower()}"
+                    lines.append(
+                        f"- {FLAG_STR_MAPPING[export_type]} [{escaped_markdown(exp)}](./{link})"
+                    )
+                else:
+                    lines.append(f"- {UNKNOWN_FLAG} {escaped_markdown(exp)}")
             lines.append("")
         lines.pop()
         return lines
