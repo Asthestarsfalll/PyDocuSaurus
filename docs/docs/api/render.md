@@ -5,8 +5,11 @@ title: render
 ## TOC
 
 - **Attributes:**
-  - 🅰 [FLAG\_MAPPING](#🅰-flag_mapping) - \+.\!\|"\)
+  - 🅰 [FLAG\_MAPPING](#🅰-flag_mapping)
+  - 🅰 [CUTTING\_MAPPING](#🅰-cutting_mapping) - \+.\!\|"\)
+  - 🅰 [USE\_TYPE\_FULL\_NAME](#🅰-use_type_full_name)
 - **Functions:**
+  - 🅵 [get\_relative\_path](#🅵-get_relative_path)
   - 🅵 [check\_type](#🅵-check_type)
   - 🅵 [format\_code](#🅵-format_code)
   - 🅵 [format\_signature](#🅵-format_signature)
@@ -26,12 +29,35 @@ FLAG_MAPPING = {
     Function: FUNC_FLAG,
     Class: CLASS_FLAG,
     Module: MODULE_FLAG,
+}
+```
+
+## 🅰 CUTTING\_MAPPING
+
+```python
+CUTTING_MAPPING = {
+    "constant": -2,
+    "function": -2,
+    "class": -2,
+    "method": -3,
+    "module": -1,
 } #+.!|")
+```
+
+## 🅰 USE\_TYPE\_FULL\_NAME
+
+```python
+USE_TYPE_FULL_NAME = False
 ```
 
 
 ## Functions
 
+## 🅵 get\_relative\_path
+
+```python
+def get_relative_path(dir_a, dir_b):
+```
 ## 🅵 check\_type
 
 ```python
@@ -130,7 +156,12 @@ docstring details \(parameters, returns, raises, etc.\).
 
 ```python
 def render_docstring(
-    self, doc: docstring_parser.Docstring, indent: int = 0, simple=True
+    self,
+    doc: docstring_parser.Docstring,
+    parent_fq_name: str,
+    parent_type: int,
+    indent: int = 0,
+    simple=True,
 ) -> list[str]:
 ```
 

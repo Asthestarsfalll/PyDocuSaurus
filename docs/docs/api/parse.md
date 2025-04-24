@@ -13,6 +13,7 @@ title: parse
   - 🅵 [parse\_class](#🅵-parse_class) - Parse a class node into a Class dataclass instance and process its methods and nested classes.
   - 🅵 [parse\_module\_docstring](#🅵-parse_module_docstring) - Extract and parse the module docstring.
   - 🅵 [parse\_module\_exports](#🅵-parse_module_exports) - Extract __all__ exports from an __init__.py module if present.
+  - 🅵 [parse\_constants](#🅵-parse_constants)
   - 🅵 [parse\_module\_constants](#🅵-parse_module_constants) - Parse constants defined in a module.
   - 🅵 [parse\_module\_functions](#🅵-parse_module_functions) - Parse top-level functions in a module.
   - 🅵 [parse\_module\_classes](#🅵-parse_module_classes) - Parse classes in a module.
@@ -89,6 +90,11 @@ def parse_module_exports(module_ast: ast.Module) -> list[str]:
 ```
 
 Extract \_\_all\_\_ exports from an \_\_init\_\_.py module if present.
+## 🅵 parse\_constants
+
+```python
+def parse_constants(node, code, module, file_path, include_private):
+```
 ## 🅵 parse\_module\_constants
 
 ```python
