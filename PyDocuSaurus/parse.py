@@ -189,6 +189,59 @@ def _get_comment_of_constants(code: str, line_number: int) -> str | None:
     return comment
 
 
+def parse_constants(node, code, module, file_path, include_private):
+    if isinstance(node, (ast.Assign, ast.AnnAssign)):
+        # Process ast.Assign nodes (may have multiple targets).
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if (
+                    isinstance(target, ast.Name)
+                    # and target.id.isupper()
+                    and target.id.lower() != "__all__"
+                    and should_include(target.id, include_private)
+                ):
+                    type_annotation = None
+                    if hasattr(node, "type_comment") and node.type_comment:
+                        type_annotation = node.type_comment
+                    # value = ast.unparse(node.value)
+                    value = astor.to_source(node.value)
+                    fq_name = f"{module.fully_qualified_name}.{target.id}"
+                    constant = Constant(
+                        path=file_path,
+                        name=target.id,
+                        fully_qualified_name=fq_name,
+                        value=value,
+                        type=type_annotation,
+                        comment=_get_comment_of_constants(code, node.lineno),
+                    )
+                    module.constants.append(constant)
+                    OBJECT_CACHE[target.id][fq_name] = "constant"
+                    break
+        # Process annotated assignments.
+        elif isinstance(node, ast.AnnAssign):
+            if (
+                isinstance(node.target, ast.Name)
+                # and node.target.id.isupper()
+                and node.target.id.lower != "__all__"
+                and should_include(node.target.id, include_private)
+            ):
+                type_annotation = (
+                    ast.unparse(node.annotation) if node.annotation else None
+                )
+                value = ast.unparse(node.value) if node.value is not None else "None"
+                fq_name = f"{module.fully_qualified_name}.{node.target.id}"
+                constant = Constant(
+                    path=file_path,
+                    name=node.target.id,
+                    fully_qualified_name=fq_name,
+                    value=value,
+                    type=type_annotation,
+                    comment=_get_comment_of_constants(code, node.lineno),
+                )
+                module.constants.append(constant)
+                OBJECT_CACHE[node.target.id][fq_name] = "constant"
+
+
 def parse_module_constants(
     code: str,
     module_ast: ast.Module,
@@ -203,59 +256,10 @@ def parse_module_constants(
     and annotated assignments.
     """
     for node in module_ast.body:
-        if isinstance(node, (ast.Assign, ast.AnnAssign)):
-            # Process ast.Assign nodes (may have multiple targets).
-
-            if isinstance(node, ast.Assign):
-                for target in node.targets:
-                    if (
-                        isinstance(target, ast.Name)
-                        # and target.id.isupper()
-                        and target.id.lower() != "__all__"
-                        and should_include(target.id, include_private)
-                    ):
-                        type_annotation = None
-                        if hasattr(node, "type_comment") and node.type_comment:
-                            type_annotation = node.type_comment
-                        # value = ast.unparse(node.value)
-                        value = astor.to_source(node.value)
-                        fq_name = f"{module.fully_qualified_name}.{target.id}"
-                        constant = Constant(
-                            path=file_path,
-                            name=target.id,
-                            fully_qualified_name=fq_name,
-                            value=value,
-                            type=type_annotation,
-                            comment=_get_comment_of_constants(code, node.lineno),
-                        )
-                        module.constants.append(constant)
-                        OBJECT_CACHE[target.id][fq_name] = "constant"
-                        break
-            # Process annotated assignments.
-            elif isinstance(node, ast.AnnAssign):
-                if (
-                    isinstance(node.target, ast.Name)
-                    and node.target.id.isupper()
-                    and node.target.id != "__ALL__"
-                    and should_include(node.target.id, include_private)
-                ):
-                    type_annotation = (
-                        ast.unparse(node.annotation) if node.annotation else None
-                    )
-                    value = (
-                        ast.unparse(node.value) if node.value is not None else "None"
-                    )
-                    fq_name = f"{module.fully_qualified_name}.{node.target.id}"
-                    constant = Constant(
-                        path=file_path,
-                        name=node.target.id,
-                        fully_qualified_name=fq_name,
-                        value=value,
-                        type=type_annotation,
-                        comment=_get_comment_of_constants(code, node.lineno),
-                    )
-                    module.constants.append(constant)
-                    OBJECT_CACHE[node.target.id][fq_name] = "constant"
+        if isinstance(node, ast.If):
+            for subnode in node.body:
+                parse_constants(subnode, code, module, file_path, include_private)
+        parse_constants(node, code, module, file_path, include_private)
 
 
 def parse_module_functions(

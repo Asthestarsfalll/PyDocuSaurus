@@ -12,8 +12,11 @@ from .constants import (
     UNKNOWN_FLAG,
     METHOD_FLAG,
     FLAG_EXPLAIN,
+    COMMON_TYPE_LINKS,
     Return,
 )
+from functools import lru_cache, partial
+import importlib
 from .models import Package, Module, Constant, Class, Function, DocumentedItem
 from pathlib import Path
 import os
@@ -28,8 +31,41 @@ FLAG_MAPPING = {
     Class: CLASS_FLAG,
     Module: MODULE_FLAG,
 }
+
+CUTTING_MAPPING = {
+    "constant": -2,
+    "function": -2,
+    "class": -2,
+    "method": -3,
+    "module": -1,
+}
 _MARKDOWN_CHARACTERS_TO_ESCAPE = set(r"\`*_{}[]<>()#+.!|")
 _MARKDOWN_CHARACTERS_TO_ESCAPE_SIMPLE = set(r"\`*__{}[]<>()#+!|")
+USE_TYPE_FULL_NAME = False
+
+
+def get_relative_path(dir_a, dir_b):
+    dir_a = dir_a.rstrip(os.sep) + os.sep
+    dir_b = dir_b.rstrip(os.sep) + os.sep
+
+    parts_a = [p for p in dir_a.split(os.sep) if p]
+    parts_b = [p for p in dir_b.split(os.sep) if p]
+
+    common_length = 0
+    for a, b in zip(parts_a, parts_b):
+        if a == b:
+            common_length += 1
+        else:
+            break
+
+    up_levels = len(parts_a) - common_length
+
+    relative_path = ("../" * up_levels) + "/".join(parts_b[common_length:])
+
+    # if not relative_path.endswith('/'):
+    #     relative_path += '/'
+
+    return relative_path
 
 
 def check_type(obj):
@@ -71,16 +107,12 @@ def handle_name_conflict(fq_name: str, with_ext: bool = False) -> str:
     return file_name.lower()
 
 
-def colorize(docstring: str, color="red") -> str:
-    return docstring
-    # return f"[{docstring}](#{docstring.replace(' ', '')})"
-
-
 def try_import_module(module_name: str):
     try:
-        return __import__(module_name)
-    except ImportError:
-        raise None
+        return importlib.import_module(module_name)
+    except ImportError as e:
+        print("import error", e)
+        return None
 
 
 # fmt: off
@@ -117,7 +149,7 @@ class MarkdownRenderer:
                 continue
             link = handle_name_conflict(module.fully_qualified_name)
             lines.append(
-                f"- {UNKNOWN_FLAG} [{escaped_markdown(module.fully_qualified_name)}](./{link})"
+                f"- {MODULE_FLAG} [{escaped_markdown(module.fully_qualified_name)}](./{link})"
             )
         lines.append("")
         extra_lines = ""
@@ -182,7 +214,11 @@ class MarkdownRenderer:
 
         # Render module docstring details if available.
         if module.docstring:
-            lines.extend(self.render_docstring(module.docstring))
+            lines.extend(
+                self.render_docstring(
+                    module.docstring, module.fully_qualified_name, "module"
+                )
+            )
             lines.append("")
         if module.exports and add_toc:
             # lines.append(f"- **[Exports](#{module.fully_qualified_name}-exports)**")
@@ -245,43 +281,64 @@ class MarkdownRenderer:
             runtime_module = try_import_module(module.fully_qualified_name)
             doc_base = module.fully_qualified_name.split(".")[0]
             for exp in module.exports:
-                cur_level = os.sep.join(module.fully_qualified_name.split(".")[1:])
-                link = None
-                if len(info := OBJECT_CACHE[exp]) == 1:
-                    link = list(info.keys())[0]
-                    export_type = list(info.values())[0]
-
-                elif (
-                    runtime_module
-                    and (runtime_exp := getattr(runtime_module, exp, Return))
-                    is not Return
-                ):
-                    export_type = check_type(runtime_exp)
-                    if export_type == "module":
-                        link = runtime_exp.__name__
-                    else:
-                        link = runtime_exp.__module__
-                if export_type in ["class", "constant"]:
-                    link = link.replace("." + exp, "")
-                if link and link.split(".")[0] == doc_base:
-                    link = handle_name_conflict(link)
-                    if export_type == "method":
-                        link = os.sep.join(link.split(os.sep)[:-1])
-                    if cur_level:
-                        link = link.replace(cur_level + os.sep, "")
-                    flag = FLAG_STR_MAPPING[export_type]
-                    if flag:
-                        flag += "-"
-                    if export_type != "module":
-                        link += f"#{flag}{exp.lower()}"
+                link, export_type, full_name = self._cross_file_link(
+                    runtime_module, module.fully_qualified_name, exp, doc_base
+                )
+                if link:
                     lines.append(
-                        f"- {FLAG_STR_MAPPING[export_type]} [{escaped_markdown(exp)}](./{link})"
+                        f"- {FLAG_STR_MAPPING[export_type]} [{escaped_markdown(full_name or exp)}]({link})"
                     )
                 else:
                     lines.append(f"- {UNKNOWN_FLAG} {escaped_markdown(exp)}")
             lines.append("")
         lines.pop()
         return lines
+
+    @lru_cache(32)
+    def _cross_file_link(
+        self, runtime_module, cur_level, value, doc_base, cut_idx=0, need_type=False
+    ):
+        link = None
+        full_name = None
+        if len(info := OBJECT_CACHE[value]) == 1:
+            link = list(info.keys())[0]
+            export_type = list(info.values())[0]
+            if need_type and export_type in ["method", "function", "module"]:
+                link = None
+        elif (
+            runtime_module
+            and (runtime_exp := getattr(runtime_module, value, Return)) is not Return
+        ):
+            export_type = check_type(runtime_exp)
+            if export_type == "module":
+                link = runtime_exp.__name__
+            else:
+                link = runtime_exp.__module__
+        else:
+            export_type = None
+        if export_type in ["class", "constant"]:
+            link = link.replace("." + value, "")
+        if link and link.split(".")[0] == doc_base:
+            link = handle_name_conflict(link)
+            if export_type == "method":
+                link = os.sep.join(link.split(os.sep)[:-1])
+            if cur_level := handle_name_conflict(cur_level):
+                if cut_idx == 0:
+                    link = "./" + link.replace(cur_level + os.sep, "")
+                else:
+                    cur_level = os.path.join(*cur_level.split(os.sep)[:cut_idx])
+                    link = get_relative_path(cur_level, link)
+            flag = FLAG_STR_MAPPING[export_type]
+            if flag:
+                flag += "-"
+            if export_type != "module":
+                link += f"#{flag}{value.lower()}"
+        elif d := COMMON_TYPE_LINKS.get(value, None):
+            link, full_name = d
+            full_name = escaped_markdown(full_name)
+        else:
+            link = None
+        return link, export_type, full_name if USE_TYPE_FULL_NAME else value
 
     def render_class_toc(self, module: Module, cls: Class, indent: int) -> list[str]:
         """Render a TOC entry for a class and its nested classes."""
@@ -300,6 +357,8 @@ class MarkdownRenderer:
         Render detailed documentation for a class including its signature, docstring details,
         its methods, and any nested classes.
         """
+        # runtime_module = try_import_module('.'.join(cls.fully_qualified_name.split('.')[:-1]))
+        # runtime_cls = getattr(runtime_module, cls.name, Return)
         lines: list[str] = []
         header_prefix = "#" * level
         lines.append(f"{header_prefix} {CLASS_FLAG} {escaped_markdown(cls.name)}")
@@ -309,7 +368,9 @@ class MarkdownRenderer:
         lines.append("```")
         lines.append("")
         if cls.docstring:
-            lines.extend(self.render_docstring(cls.docstring))
+            lines.extend(
+                self.render_docstring(cls.docstring, cls.fully_qualified_name, "class")
+            )
             lines.append("")
         if cls.functions:
             # lines.append("**Functions:**")
@@ -341,14 +402,41 @@ class MarkdownRenderer:
         lines.append("```")
         lines.append("")
         if func.docstring:
-            lines.extend(self.render_docstring(func.docstring))
+            lines.extend(
+                self.render_docstring(
+                    func.docstring,
+                    func.fully_qualified_name,
+                    "function" if flag == FUNC_FLAG else "method",
+                )
+            )
             lines.append("")
         lines.pop()
         return lines
 
+    def _try_link(self, text, cur_fq_name, runtime_module=None, cut_idx=0):
+        split_text = text.split(" | ")
+
+        def _inner(t):
+            t = t.strip()
+            link, _, full_name = self._cross_file_link(
+                runtime_module=runtime_module,
+                cur_level=cur_fq_name,
+                value=t.strip(),
+                doc_base=cur_fq_name.split(".")[0],
+                cut_idx=cut_idx,
+                need_type=True,
+            )
+            if not link:
+                return t
+            return f"[{full_name or t}]({link})"
+
+        return " | ".join([_inner(x) for x in split_text])
+
     def render_docstring(
         self,
         doc: docstring_parser.Docstring,
+        parent_fq_name: str,
+        parent_type: int,
         indent: int = 0,
         simple=True,
     ) -> list[str]:
@@ -356,6 +444,8 @@ class MarkdownRenderer:
         Render detailed docstring information including description, parameters,
         returns, raises, and attributes. An indent level can be provided for nested output.
         """
+        cut_idx = CUTTING_MAPPING[parent_type]
+        _try = partial(self._try_link, cut_idx=cut_idx, cur_fq_name=parent_fq_name)
         indent_str = "  " * indent
         lines: list[str] = []
         if doc.short_description:
@@ -372,9 +462,9 @@ class MarkdownRenderer:
             lines.append(f"{indent_str}**Parameters:**")
             lines.append("")
             for param in doc.params:
-                line = f"{indent_str}- **{colorize(param.arg_name)}**"
+                line = f"{indent_str}- **{param.arg_name}**"
                 if param.type_name:
-                    line += f" ({param.type_name})"
+                    line += f" ({_try(param.type_name)})"
                 if param.default:
                     line += f" (default to `{param.default}`)"
                 if param.description:
@@ -385,9 +475,9 @@ class MarkdownRenderer:
             lines.append(f"{indent_str}**Attributes:**")
             lines.append("")
             for attr in doc.attrs:
-                line = f"{indent_str}- **{colorize(attr.arg_name)}**"
+                line = f"{indent_str}- **{attr.arg_name}**"
                 if attr.type_name:
-                    line += f" ({attr.type_name})"
+                    line += f" ({_try(attr.type_name)})"
                 if attr.description:
                     line += f": {escaped_markdown(attr.description, simple)}"
                 lines.append(line)
@@ -397,7 +487,7 @@ class MarkdownRenderer:
             lines.append("")
             ret_line = ""
             if doc.returns.type_name:
-                ret_line += f"**{colorize(doc.returns.type_name)}**: "
+                ret_line += f"**{_try(doc.returns.type_name)}**: "
             if doc.returns.description:
                 ret_line += f"{escaped_markdown(doc.returns.description, simple)}"
             else:
@@ -409,9 +499,7 @@ class MarkdownRenderer:
             lines.append(f"{indent_str}**Raises:**")
             lines.append("")
             for raise_item in doc.raises:
-                raise_line = (
-                    f"{indent_str}- **{colorize(raise_item.type_name or '')}**: "
-                )
+                raise_line = f"{indent_str}- **{_try(raise_item.type_name) or ''}**: "
                 if raise_item.description:
                     raise_line += f"{escaped_markdown(raise_item.description, simple)}"
                 else:

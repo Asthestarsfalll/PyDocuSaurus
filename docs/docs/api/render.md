@@ -11,7 +11,6 @@ title: render
   - 🅵 [format\_code](#🅵-format_code)
   - 🅵 [format\_signature](#🅵-format_signature)
   - 🅵 [handle\_name\_conflict](#🅵-handle_name_conflict)
-  - 🅵 [colorize](#🅵-colorize)
   - 🅵 [try\_import\_module](#🅵-try_import_module)
   - 🅵 [escaped\_markdown](#🅵-escaped_markdown)
 - **Classes:**
@@ -52,11 +51,6 @@ def format_signature(signature: str) -> str:
 
 ```python
 def handle_name_conflict(fq_name: str, with_ext: bool = False) -> str:
-```
-## 🅵 colorize
-
-```python
-def colorize(docstring: str, color="red") -> str:
 ```
 ## 🅵 try\_import\_module
 
