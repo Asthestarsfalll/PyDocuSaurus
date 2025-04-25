@@ -273,7 +273,11 @@ class MarkdownRenderer:
             lines.append(f"{header_prefix}# Classes")
             lines.append("")
             for cls in module.classes:
-                lines.extend(self.render_class_details(cls, level=level + 1))
+                lines.extend(
+                    self.render_class_details(
+                        cls, level=level + 1, aliases=module.aliases
+                    )
+                )
             lines.append("")
         if module.exports:
             lines.append(f"{header_prefix}# Exports")
@@ -282,7 +286,11 @@ class MarkdownRenderer:
             doc_base = module.fully_qualified_name.split(".")[0]
             for exp in module.exports:
                 link, export_type, full_name = self._cross_file_link(
-                    runtime_module, module.fully_qualified_name, exp, doc_base
+                    runtime_module,
+                    module.fully_qualified_name,
+                    exp,
+                    doc_base,
+                    alias=module.aliases.get(exp, None),
                 )
                 if link:
                     lines.append(
@@ -294,13 +302,31 @@ class MarkdownRenderer:
         lines.pop()
         return lines
 
+    def _try_choose(self, value, alias, cur_level):
+        def _get_info(v):
+            info = OBJECT_CACHE.get(v, None)
+            if info is None or len(info) == 1:
+                return info
+            target_key = cur_level + "." + value
+            if target_key in info:
+                return {target_key: info[target_key]}
+
+        return _get_info(alias) or _get_info(value)
+
     @lru_cache(32)
     def _cross_file_link(
-        self, runtime_module, cur_level, value, doc_base, cut_idx=0, need_type=False
+        self,
+        runtime_module,
+        cur_level,
+        value,
+        doc_base,
+        cut_idx=0,
+        need_type=False,
+        alias=None,
     ):
         link = None
         full_name = None
-        if len(info := OBJECT_CACHE[value]) == 1:
+        if info := self._try_choose(value, alias, cur_level):
             link = list(info.keys())[0]
             export_type = list(info.values())[0]
             if need_type and export_type in ["method", "function", "module"]:
@@ -317,28 +343,34 @@ class MarkdownRenderer:
         else:
             export_type = None
         if export_type in ["class", "constant"]:
-            link = link.replace("." + value, "")
-        if link and link.split(".")[0] == doc_base:
+            link = link.replace("." + (alias or value), "", 1)
+        flag = FLAG_STR_MAPPING.get(export_type, None)
+        if flag:
+            flag += "-"
+        if link == cur_level:
+            link = f"#{flag}{(alias or value).lower()}"
+        elif link and link.split(".")[0] == doc_base:
             link = handle_name_conflict(link)
             if export_type == "method":
                 link = os.sep.join(link.split(os.sep)[:-1])
             if cur_level := handle_name_conflict(cur_level):
                 if cut_idx == 0:
-                    link = "./" + link.replace(cur_level + os.sep, "")
+                    link = get_relative_path(cur_level, link)
                 else:
                     cur_level = os.path.join(*cur_level.split(os.sep)[:cut_idx])
                     link = get_relative_path(cur_level, link)
-            flag = FLAG_STR_MAPPING[export_type]
-            if flag:
-                flag += "-"
             if export_type != "module":
-                link += f"#{flag}{value.lower()}"
+                link += f"#{flag}{(alias or value).lower()}"
         elif d := COMMON_TYPE_LINKS.get(value, None):
             link, full_name = d
             full_name = escaped_markdown(full_name)
         else:
             link = None
-        return link, export_type, full_name if USE_TYPE_FULL_NAME else value
+        return (
+            link,
+            export_type,
+            full_name if USE_TYPE_FULL_NAME else value,
+        )
 
     def render_class_toc(self, module: Module, cls: Class, indent: int) -> list[str]:
         """Render a TOC entry for a class and its nested classes."""
@@ -352,7 +384,7 @@ class MarkdownRenderer:
             lines.extend(self.render_class_toc(module, nested, indent + 1))
         return lines
 
-    def render_class_details(self, cls: Class, level: int) -> list[str]:
+    def render_class_details(self, cls: Class, level: int, aliases=None) -> list[str]:
         """
         Render detailed documentation for a class including its signature, docstring details,
         its methods, and any nested classes.
@@ -369,7 +401,12 @@ class MarkdownRenderer:
         lines.append("")
         if cls.docstring:
             lines.extend(
-                self.render_docstring(cls.docstring, cls.fully_qualified_name, "class")
+                self.render_docstring(
+                    cls.docstring,
+                    cls.fully_qualified_name,
+                    "class",
+                    alias=aliases.get(cls.name, None),
+                )
             )
             lines.append("")
         if cls.functions:
@@ -377,7 +414,12 @@ class MarkdownRenderer:
             lines.append("")
             for func in cls.functions:
                 lines.extend(
-                    self.render_function(func, level=level + 1, flag=METHOD_FLAG)
+                    self.render_function(
+                        func,
+                        level=level + 1,
+                        flag=METHOD_FLAG,
+                        alias=aliases.get(func.name, None),
+                    )
                 )
             lines.append("")
         if cls.classes:
@@ -388,7 +430,9 @@ class MarkdownRenderer:
         lines.pop()
         return lines
 
-    def render_function(self, func: Function, level: int, flag=FUNC_FLAG) -> list[str]:
+    def render_function(
+        self, func: Function, level: int, flag=FUNC_FLAG, alias=None
+    ) -> list[str]:
         """
         Render detailed documentation for a function/method including its signature and
         docstring details (parameters, returns, raises, etc.).
@@ -407,13 +451,14 @@ class MarkdownRenderer:
                     func.docstring,
                     func.fully_qualified_name,
                     "function" if flag == FUNC_FLAG else "method",
+                    alias=alias,
                 )
             )
             lines.append("")
         lines.pop()
         return lines
 
-    def _try_link(self, text, cur_fq_name, runtime_module=None, cut_idx=0):
+    def _try_link(self, text, cur_fq_name, runtime_module=None, cut_idx=0, alias=None):
         split_text = text.split(" | ")
 
         def _inner(t):
@@ -425,6 +470,7 @@ class MarkdownRenderer:
                 doc_base=cur_fq_name.split(".")[0],
                 cut_idx=cut_idx,
                 need_type=True,
+                alias=alias,
             )
             if not link:
                 return t
@@ -439,13 +485,16 @@ class MarkdownRenderer:
         parent_type: int,
         indent: int = 0,
         simple=True,
+        alias=None,
     ) -> list[str]:
         """
         Render detailed docstring information including description, parameters,
         returns, raises, and attributes. An indent level can be provided for nested output.
         """
         cut_idx = CUTTING_MAPPING[parent_type]
-        _try = partial(self._try_link, cut_idx=cut_idx, cur_fq_name=parent_fq_name)
+        _try = partial(
+            self._try_link, cut_idx=cut_idx, cur_fq_name=parent_fq_name, alias=alias
+        )
         indent_str = "  " * indent
         lines: list[str] = []
         if doc.short_description:

@@ -11,7 +11,7 @@ title: constants
   - 🅰 [METHOD\_FLAG](#🅰-method_flag) - flag for method
   - 🅰 [ATTR\_FLAG](#🅰-attr_flag) - flag for attribute
   - 🅰 [UNKNOWN\_FLAG](#🅰-unknown_flag) - flag for unknown
-  - 🅰 [FLAG\_STR\_MAPPING](#🅰-flag_str_mapping)
+  - 🅰 [FLAG\_STR\_MAPPING](#🅰-flag_str_mapping) - None: UNKNOWN\_FLAG,
   - 🅰 [FLAG\_EXPLAIN](#🅰-flag_explain)
   - 🅰 [INDEX\_TEMPLATE](#🅰-index_template)
   - 🅰 [DOCUSAURUS\_SECTION](#🅰-docusaurus_section) - for docusaurus annotations
@@ -67,7 +67,7 @@ FLAG_STR_MAPPING = {
     "module": MODULE_FLAG,
     "constant": ATTR_FLAG,
     "method": METHOD_FLAG,
-}
+} #None: UNKNOWN_FLAG,
 ```
 
 ## 🅰 FLAG\_EXPLAIN
@@ -100,6 +100,9 @@ title: {}
 DOCUSAURUS_SECTION = {
     "note": Section("Note", "note", SectionType.SINGULAR_OR_MULTIPLE),
     "info": Section("Info", "info", SectionType.SINGULAR_OR_MULTIPLE),
+    "critical": Section(
+        "Critical", "critical", SectionType.SINGULAR_OR_MULTIPLE
+    ),
     "warn": Section("Warn", "warn", SectionType.SINGULAR_OR_MULTIPLE),
     "tip": Section("Tip", "tip", SectionType.SINGULAR_OR_MULTIPLE),
 } #for docusaurus annotations

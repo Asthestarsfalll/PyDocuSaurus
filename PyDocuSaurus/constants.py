@@ -14,6 +14,7 @@ FLAG_STR_MAPPING = {
     "module": MODULE_FLAG,
     "constant": ATTR_FLAG,
     "method": METHOD_FLAG,
+    # None: UNKNOWN_FLAG,
 }
 FLAG_EXPLAIN = """**Flags:**
 - 🅵: function
@@ -36,6 +37,7 @@ title: {}
 DOCUSAURUS_SECTION = {
     "note": Section("Note", "note", SectionType.SINGULAR_OR_MULTIPLE),
     "info": Section("Info", "info", SectionType.SINGULAR_OR_MULTIPLE),
+    "critical": Section("Critical", "critical", SectionType.SINGULAR_OR_MULTIPLE),
     "warn": Section("Warn", "warn", SectionType.SINGULAR_OR_MULTIPLE),
     "tip": Section("Tip", "tip", SectionType.SINGULAR_OR_MULTIPLE),
 }  # for docusaurus annotations

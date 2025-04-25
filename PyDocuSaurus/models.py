@@ -32,6 +32,7 @@ class Module:
     functions: list[Function] = field(default_factory=list)
     classes: list[Class] = field(default_factory=list)
     exports: list[str] = field(default_factory=list)
+    aliases: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass

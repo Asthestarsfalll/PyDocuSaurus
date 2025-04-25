@@ -135,7 +135,9 @@ Render a TOC entry for a class and its nested classes.
 ### 🅼 render\_class\_details
 
 ```python
-def render_class_details(self, cls: Class, level: int) -> list[str]:
+def render_class_details(
+    self, cls: Class, level: int, aliases=None
+) -> list[str]:
 ```
 
 Render detailed documentation for a class including its signature, docstring details,
@@ -145,7 +147,7 @@ its methods, and any nested classes.
 
 ```python
 def render_function(
-    self, func: Function, level: int, flag=FUNC_FLAG
+    self, func: Function, level: int, flag=FUNC_FLAG, alias=None
 ) -> list[str]:
 ```
 
@@ -162,6 +164,7 @@ def render_docstring(
     parent_type: int,
     indent: int = 0,
     simple=True,
+    alias=None,
 ) -> list[str]:
 ```
 

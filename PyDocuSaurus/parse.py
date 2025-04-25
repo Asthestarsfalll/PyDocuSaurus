@@ -151,9 +151,17 @@ def parse_module_docstring(module_ast: ast.Module) -> docstring_parser.Docstring
     return docstring_parser.parse(raw_doc) if raw_doc else None
 
 
-def parse_module_exports(module_ast: ast.Module) -> list[str]:
-    """Extract __all__ exports from an __init__.py module if present."""
-    exports: list = []
+def parse_module_exports(module_ast: ast.Module) -> tuple[list[str], dict[str, str]]:
+    """Extract __all__ exports from an __init__.py module if present and parse import aliases.
+
+    Returns:
+        tuple: A tuple containing:
+            - list of exported names from __all__
+            - dictionary mapping original names to their aliases (from 'import as')
+    """
+    exports: list[str] = []
+    aliases: dict[str, str] = {}
+
     for node in module_ast.body:
         if isinstance(node, ast.Assign):
             for target in node.targets:
@@ -162,11 +170,15 @@ def parse_module_exports(module_ast: ast.Module) -> list[str]:
                         for elt in node.value.elts:
                             value = get_string_value(elt)
                             if value:
-                                #     import_from = get_import_from(value, module_ast)
-                                # TODO
                                 exports.append(value)
                     break
-    return exports
+
+        elif isinstance(node, (ast.Import, ast.ImportFrom)):
+            for alias in node.names:
+                if alias.asname:  # This is an 'import as' statement
+                    aliases[alias.asname] = alias.name
+
+    return exports, aliases
 
 
 def _get_comment_of_constants(code: str, line_number: int) -> str | None:
@@ -348,11 +360,12 @@ def parse_module(
         functions=[],
         classes=[],
         exports=[],
+        aliases={},
     )
     parse_module_constants(source, module_ast, module, file_path, include_private)
     parse_module_functions(module_ast, module, file_path, include_private)
     parse_module_classes(module_ast, module, file_path, include_private)
     if mod_name == "__init__":
-        module.exports = parse_module_exports(module_ast)
+        module.exports, module.aliases = parse_module_exports(module_ast)
         parse_module_submodules(module, file_path, include_private)
     return module

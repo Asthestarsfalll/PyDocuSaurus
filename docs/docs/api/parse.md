@@ -12,7 +12,7 @@ title: parse
   - 🅵 [parse\_function](#🅵-parse_function) - Parse a function or method node into a Function dataclass instance.
   - 🅵 [parse\_class](#🅵-parse_class) - Parse a class node into a Class dataclass instance and process its methods and nested classes.
   - 🅵 [parse\_module\_docstring](#🅵-parse_module_docstring) - Extract and parse the module docstring.
-  - 🅵 [parse\_module\_exports](#🅵-parse_module_exports) - Extract __all__ exports from an __init__.py module if present.
+  - 🅵 [parse\_module\_exports](#🅵-parse_module_exports) - Extract __all__ exports from an __init__.py module if present and parse import aliases.
   - 🅵 [parse\_constants](#🅵-parse_constants)
   - 🅵 [parse\_module\_constants](#🅵-parse_module_constants) - Parse constants defined in a module.
   - 🅵 [parse\_module\_functions](#🅵-parse_module_functions) - Parse top-level functions in a module.
@@ -86,10 +86,18 @@ Extract and parse the module docstring.
 ## 🅵 parse\_module\_exports
 
 ```python
-def parse_module_exports(module_ast: ast.Module) -> list[str]:
+def parse_module_exports(
+    module_ast: ast.Module,
+) -> tuple[list[str], dict[str, str]]:
 ```
 
-Extract \_\_all\_\_ exports from an \_\_init\_\_.py module if present.
+Extract \_\_all\_\_ exports from an \_\_init\_\_.py module if present and parse import aliases.
+
+**Returns:**
+
+- **[tuple](https://docs.python.org/3/library/stdtypes.html#tuples)**: A tuple containing:
+- list of exported names from \_\_all\_\_
+- dictionary mapping original names to their aliases \(from 'import as'\)
 ## 🅵 parse\_constants
 
 ```python
