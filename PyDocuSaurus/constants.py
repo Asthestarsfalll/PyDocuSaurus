@@ -33,6 +33,13 @@ title: {}
 """
 # Index template for docusaurus
 
+MAX_LINES = 10
+DETAIL_TEMPLATE_BEGINE = """<details>
+
+<summary>{}</summary>"""
+DETAIL_TEMPLATE_END = """
+</details>
+"""
 
 DOCUSAURUS_SECTION = {
     "note": Section("Note", "note", SectionType.SINGULAR_OR_MULTIPLE),

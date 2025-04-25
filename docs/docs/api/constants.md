@@ -14,6 +14,9 @@ title: constants
   - 🅰 [FLAG\_STR\_MAPPING](#🅰-flag_str_mapping) - None: UNKNOWN\_FLAG,
   - 🅰 [FLAG\_EXPLAIN](#🅰-flag_explain)
   - 🅰 [INDEX\_TEMPLATE](#🅰-index_template)
+  - 🅰 [MAX\_LINES](#🅰-max_lines)
+  - 🅰 [DETAIL\_TEMPLATE\_BEGINE](#🅰-detail_template_begine)
+  - 🅰 [DETAIL\_TEMPLATE\_END](#🅰-detail_template_end)
   - 🅰 [DOCUSAURUS\_SECTION](#🅰-docusaurus_section) - for docusaurus annotations
   - 🅰 [OBJECT\_CACHE](#🅰-object_cache) - name: \{fully\_qualified\_name: type\}
   - 🅰 [COMMON\_TYPE\_LINKS](#🅰-common_type_links) - numeric-types-int-float-complex",
@@ -94,6 +97,28 @@ title: {}
 """
 ```
 
+## 🅰 MAX\_LINES
+
+```python
+MAX_LINES = 10
+```
+
+## 🅰 DETAIL\_TEMPLATE\_BEGINE
+
+```python
+DETAIL_TEMPLATE_BEGINE = """<details>
+
+<summary>{}</summary>"""
+```
+
+## 🅰 DETAIL\_TEMPLATE\_END
+
+```python
+DETAIL_TEMPLATE_END = """
+</details>
+"""
+```
+
 ## 🅰 DOCUSAURUS\_SECTION
 
 ```python
@@ -116,6 +141,9 @@ OBJECT_CACHE: dict[dict[str, str]] = defaultdict(lambda: {}) #name: {fully_quali
 
 ## 🅰 COMMON\_TYPE\_LINKS
 
+<details>
+
+<summary>COMMON_TYPE_LINKS</summary>
 ```python
 COMMON_TYPE_LINKS = {
     "int": (
@@ -452,6 +480,9 @@ COMMON_TYPE_LINKS = {
     ),
 } #numeric-types-int-float-complex",
 ```
+
+</details>
+
 
 
 ## Classes

@@ -13,6 +13,9 @@ from .constants import (
     METHOD_FLAG,
     FLAG_EXPLAIN,
     COMMON_TYPE_LINKS,
+    MAX_LINES,
+    DETAIL_TEMPLATE_BEGINE,
+    DETAIL_TEMPLATE_END,
     Return,
 )
 from functools import lru_cache, partial
@@ -188,12 +191,16 @@ class MarkdownRenderer:
         type_str = f": {const.type}" if const.type else ""
         lines.append(f"{header_prefix} {ATTR_FLAG} {escaped_markdown(const.name)}")
         lines.append("")
+        if is_too_long := const.value.count("\n") > MAX_LINES:
+            lines.append(DETAIL_TEMPLATE_BEGINE.format(const.name))
         lines.append("```python")
         value = const.value.strip("\n")
         lines.append(format_code(f"{const.name}{type_str} = {value}").strip("\n"))
         if const.comment:
             lines[-1] += " #" + const.comment
         lines.append("```")
+        if is_too_long:
+            lines.append(DETAIL_TEMPLATE_END)
         return lines
 
     def render_module(
