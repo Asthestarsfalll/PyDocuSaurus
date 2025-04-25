@@ -13,6 +13,7 @@ title: parse
   - 🅵 [parse\_class](#🅵-parse_class) - Parse a class node into a Class dataclass instance and process its methods and nested classes.
   - 🅵 [parse\_module\_docstring](#🅵-parse_module_docstring) - Extract and parse the module docstring.
   - 🅵 [parse\_module\_exports](#🅵-parse_module_exports) - Extract __all__ exports from an __init__.py module if present and parse import aliases.
+  - 🅵 [\_get\_comment\_of\_constants](#🅵-_get_comment_of_constants)
   - 🅵 [parse\_constants](#🅵-parse_constants)
   - 🅵 [parse\_module\_constants](#🅵-parse_module_constants) - Parse constants defined in a module.
   - 🅵 [parse\_module\_functions](#🅵-parse_module_functions) - Parse top-level functions in a module.
@@ -98,6 +99,11 @@ Extract \_\_all\_\_ exports from an \_\_init\_\_.py module if present and parse 
 - **[tuple](https://docs.python.org/3/library/stdtypes.html#tuples)**: A tuple containing:
 - list of exported names from \_\_all\_\_
 - dictionary mapping original names to their aliases \(from 'import as'\)
+## 🅵 \_get\_comment\_of\_constants
+
+```python
+def _get_comment_of_constants(code: str, line_number: int) -> str | None:
+```
 ## 🅵 parse\_constants
 
 ```python

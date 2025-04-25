@@ -7,6 +7,8 @@ title: render
 - **Attributes:**
   - 🅰 [FLAG\_MAPPING](#🅰-flag_mapping)
   - 🅰 [CUTTING\_MAPPING](#🅰-cutting_mapping) - \+.\!\|"\)
+  - 🅰 [\_MARKDOWN\_CHARACTERS\_TO\_ESCAPE](#🅰-_markdown_characters_to_escape) - \+.\!\|"\)
+  - 🅰 [\_MARKDOWN\_CHARACTERS\_TO\_ESCAPE\_SIMPLE](#🅰-_markdown_characters_to_escape_simple) - \+\!\|"\)
   - 🅰 [USE\_TYPE\_FULL\_NAME](#🅰-use_type_full_name)
 - **Functions:**
   - 🅵 [get\_relative\_path](#🅵-get_relative_path)
@@ -42,6 +44,18 @@ CUTTING_MAPPING = {
     "method": -3,
     "module": -1,
 } #+.!|")
+```
+
+## 🅰 \_MARKDOWN\_CHARACTERS\_TO\_ESCAPE
+
+```python
+_MARKDOWN_CHARACTERS_TO_ESCAPE = set("\\`*_{}[]<>()#+.!|") #+.!|")
+```
+
+## 🅰 \_MARKDOWN\_CHARACTERS\_TO\_ESCAPE\_SIMPLE
+
+```python
+_MARKDOWN_CHARACTERS_TO_ESCAPE_SIMPLE = set("\\`*__{}[]<>()#+!|") #+!|")
 ```
 
 ## 🅰 USE\_TYPE\_FULL\_NAME
@@ -101,7 +115,12 @@ class MarkdownRenderer:
 ### 🅼 render
 
 ```python
-def render(self, package: Package, output_path: Path | None = None) -> None:
+def render(
+    self,
+    package: Package,
+    output_path: Path | None = None,
+    base_url: str | None = None,
+) -> None:
 ```
 
 Render the given package as Markdown. If output\_path is None or '-', output to stdout.
@@ -123,6 +142,25 @@ def render_module(
 Render a module section that includes the module's signature \(if any\), its docstring details,
 
 and a table of contents linking to its classes, functions, constants, exports, and submodules.
+### 🅼 \_try\_choose
+
+```python
+def _try_choose(self, value, alias, cur_level):
+```
+### 🅼 \_cross\_file\_link
+
+```python
+def _cross_file_link(
+    self,
+    runtime_module,
+    cur_level,
+    value,
+    doc_base,
+    cut_idx=0,
+    need_type=False,
+    alias=None,
+):
+```
 ### 🅼 render\_class\_toc
 
 ```python
@@ -154,6 +192,13 @@ def render_function(
 Render detailed documentation for a function/method including its signature and
 
 docstring details \(parameters, returns, raises, etc.\).
+### 🅼 \_try\_link
+
+```python
+def _try_link(
+    self, text, cur_fq_name, runtime_module=None, cut_idx=0, alias=None
+):
+```
 ### 🅼 render\_docstring
 
 ```python

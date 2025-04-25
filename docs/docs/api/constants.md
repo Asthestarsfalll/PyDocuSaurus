@@ -11,7 +11,7 @@ title: constants
   - 🅰 [METHOD\_FLAG](#🅰-method_flag) - flag for method
   - 🅰 [ATTR\_FLAG](#🅰-attr_flag) - flag for attribute
   - 🅰 [UNKNOWN\_FLAG](#🅰-unknown_flag) - flag for unknown
-  - 🅰 [FLAG\_STR\_MAPPING](#🅰-flag_str_mapping) - None: UNKNOWN\_FLAG,
+  - 🅰 [FLAG\_STR\_MAPPING](#🅰-flag_str_mapping)
   - 🅰 [FLAG\_EXPLAIN](#🅰-flag_explain)
   - 🅰 [INDEX\_TEMPLATE](#🅰-index_template)
   - 🅰 [MAX\_LINES](#🅰-max_lines)
@@ -70,7 +70,7 @@ FLAG_STR_MAPPING = {
     "module": MODULE_FLAG,
     "constant": ATTR_FLAG,
     "method": METHOD_FLAG,
-} #None: UNKNOWN_FLAG,
+}
 ```
 
 ## 🅰 FLAG\_EXPLAIN
@@ -125,10 +125,8 @@ DETAIL_TEMPLATE_END = """
 DOCUSAURUS_SECTION = {
     "note": Section("Note", "note", SectionType.SINGULAR_OR_MULTIPLE),
     "info": Section("Info", "info", SectionType.SINGULAR_OR_MULTIPLE),
-    "critical": Section(
-        "Critical", "critical", SectionType.SINGULAR_OR_MULTIPLE
-    ),
-    "warn": Section("Warn", "warn", SectionType.SINGULAR_OR_MULTIPLE),
+    "danger": Section("Danger", "danger", SectionType.SINGULAR_OR_MULTIPLE),
+    "warning": Section("Warning", "warning", SectionType.SINGULAR_OR_MULTIPLE),
     "tip": Section("Tip", "tip", SectionType.SINGULAR_OR_MULTIPLE),
 } #for docusaurus annotations
 ```
@@ -478,6 +476,23 @@ COMMON_TYPE_LINKS = {
         "https://docs.python.org/3/library/exceptions.html#ImportError",
         "ImportError",
     ),
+    "TypeError": (
+        "https://docs.python.org/3/library/exceptions.html#TypeError",
+        "TypeError",
+    ),
+    "UnboundLocalError": (
+        "https://docs.python.org/3/library/exceptions.html#UnboundLocalError",
+        "UnboundLocalError",
+    ),
+    "FunctionType": (
+        "https://docs.python.org/3/library/types.html#types.FunctionType",
+        "FunctionType",
+    ),
+    "ModuleType": (
+        "https://docs.python.org/3/library/types.html#types.ModuleType",
+        "ModuleType",
+    ),
+    "None": ("https://docs.python.org/3/library/constants.html#None", "None"),
 } #numeric-types-int-float-complex",
 ```
 
