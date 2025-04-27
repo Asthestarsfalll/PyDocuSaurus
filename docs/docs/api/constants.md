@@ -1,5 +1,6 @@
 ---
 title: constants
+sidebar_position: 3
 ---
 
 ## TOC
@@ -15,6 +16,8 @@ title: constants
   - 🅰 [FLAG\_EXPLAIN](#🅰-flag_explain)
   - 🅰 [INDEX\_TEMPLATE](#🅰-index_template)
   - 🅰 [MAX\_LINES](#🅰-max_lines)
+  - 🅰 [INCLUDE\_LINES](#🅰-include_lines)
+  - 🅰 [INCLUDE\_IF](#🅰-include_if)
   - 🅰 [DETAIL\_TEMPLATE\_BEGINE](#🅰-detail_template_begine)
   - 🅰 [DETAIL\_TEMPLATE\_END](#🅰-detail_template_end)
   - 🅰 [DOCUSAURUS\_SECTION](#🅰-docusaurus_section) - for docusaurus annotations
@@ -63,6 +66,9 @@ UNKNOWN_FLAG = """🅤""" #flag for unknown
 
 ## 🅰 FLAG\_STR\_MAPPING
 
+<details>
+
+<summary>FLAG\_STR\_MAPPING</summary>
 ```python
 FLAG_STR_MAPPING = {
     "class": CLASS_FLAG,
@@ -73,8 +79,14 @@ FLAG_STR_MAPPING = {
 }
 ```
 
+</details>
+
+
 ## 🅰 FLAG\_EXPLAIN
 
+<details>
+
+<summary>FLAG\_EXPLAIN</summary>
 ```python
 FLAG_EXPLAIN = """**Flags:**
 - 🅵: function
@@ -87,20 +99,42 @@ FLAG_EXPLAIN = """**Flags:**
 """
 ```
 
+</details>
+
+
 ## 🅰 INDEX\_TEMPLATE
 
+<details>
+
+<summary>INDEX\_TEMPLATE</summary>
 ```python
 INDEX_TEMPLATE = """---
 title: {}
+sidebar_position: {}
 ---
 
 """
 ```
 
+</details>
+
+
 ## 🅰 MAX\_LINES
 
 ```python
 MAX_LINES = 25
+```
+
+## 🅰 INCLUDE\_LINES
+
+```python
+INCLUDE_LINES = 20
+```
+
+## 🅰 INCLUDE\_IF
+
+```python
+INCLUDE_IF = True
 ```
 
 ## 🅰 DETAIL\_TEMPLATE\_BEGINE
@@ -121,6 +155,9 @@ DETAIL_TEMPLATE_END = """
 
 ## 🅰 DOCUSAURUS\_SECTION
 
+<details>
+
+<summary>DOCUSAURUS\_SECTION</summary>
 ```python
 DOCUSAURUS_SECTION = {
     "note": Section("Note", "note", SectionType.SINGULAR_OR_MULTIPLE),
@@ -130,6 +167,9 @@ DOCUSAURUS_SECTION = {
     "tip": Section("Tip", "tip", SectionType.SINGULAR_OR_MULTIPLE),
 } #for docusaurus annotations
 ```
+
+</details>
+
 
 ## 🅰 OBJECT\_CACHE
 
@@ -493,6 +533,34 @@ COMMON_TYPE_LINKS = {
         "ModuleType",
     ),
     "None": ("https://docs.python.org/3/library/constants.html#None", "None"),
+    "inspect.Parameter": (
+        "https://docs.python.org/3/library/inspect.html#inspect.Parameter",
+        "Parameter",
+    ),
+    "inspect.Signature": (
+        "https://docs.python.org/3/library/inspect.html#inspect.Signature",
+        "Signature",
+    ),
+    "inspect.ParameterKind": (
+        "https://docs.python.org/3/library/inspect.html#inspect.ParameterKind",
+        "ParameterKind",
+    ),
+    "inspect.Section": (
+        "https://docs.python.org/3/library/inspect.html#inspect.Section",
+        "Section",
+    ),
+    "inspect.SectionType": (
+        "https://docs.python.org/3/library/inspect.html#inspect.SectionType",
+        "SectionType",
+    ),
+    "inspect.SINGULAR": (
+        "https://docs.python.org/3/library/inspect.html#inspect.SINGULAR",
+        "SINGULAR",
+    ),
+    "Sequence": (
+        "https://docs.python.org/3/library/typing.html#typing.Sequence",
+        "Sequence",
+    ),
 } #numeric-types-int-float-complex",
 ```
 

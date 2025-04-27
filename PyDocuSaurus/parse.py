@@ -7,6 +7,7 @@ import docstring_parser
 import astor
 from docstring_parser.google import DEFAULT_SECTIONS
 from .constants import DOCUSAURUS_SECTION, OBJECT_CACHE
+from . import constants
 
 DEFAULT_SECTIONS.extend(list(DOCUSAURUS_SECTION.values()))
 
@@ -29,10 +30,6 @@ def get_string_value(node: ast.AST) -> str | None:
     if isinstance(node, ast.Constant) and isinstance(node.value, str):
         return node.value
     return None
-
-
-def get_import_from(imported_name: str, module_ast: ast.Module):
-    pass
 
 
 def build_signature(node: ast.FunctionDef | ast.AsyncFunctionDef) -> str:
@@ -96,6 +93,7 @@ def parse_function(
     parsed_doc = docstring_parser.parse(raw_doc) if raw_doc else None
     fq_name = f"{parent.fully_qualified_name}.{node.name}"
     OBJECT_CACHE[node.name][parent.fully_qualified_name] = type
+    code = astor.to_source(node)
     return Function(
         path=file_path,
         name=node.name,
@@ -103,6 +101,7 @@ def parse_function(
         signature=f"def {signature}:",
         docstring=parsed_doc,
         decorator_list=["@" + astor.to_source(d) for d in node.decorator_list],
+        body=code if code.count("\n") < constants.INCLUDE_LINES else None,
     )
 
 
@@ -275,7 +274,7 @@ def parse_module_constants(
     and annotated assignments.
     """
     for node in module_ast.body:
-        if isinstance(node, ast.If):
+        if isinstance(node, ast.If) and constants.INCLUDE_IF:
             for subnode in node.body:
                 parse_constants(subnode, code, module, file_path, include_private)
         parse_constants(node, code, module, file_path, include_private)
@@ -294,6 +293,8 @@ def parse_module_functions(
                 continue
             func = parse_function(node, file_path, parent=module)
             module.functions.append(func)
+        elif isinstance(node, ast.If) and constants.INCLUDE_IF:
+            parse_module_functions(node, module, file_path, include_private)
 
 
 def parse_module_classes(
@@ -316,6 +317,8 @@ def parse_module_classes(
                 code=code,
             )
             module.classes.append(cls)
+        elif isinstance(node, ast.If) and constants.INCLUDE_IF:
+            parse_module_classes(code, node, module, file_path, include_private)
 
 
 def parse_module_submodules(

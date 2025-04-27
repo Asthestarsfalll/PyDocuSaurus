@@ -1,5 +1,6 @@
 ---
 title: models
+sidebar_position: 3
 ---
 
 ## TOC
@@ -23,6 +24,9 @@ class DocumentedItem(Protocol):
 ```
 ## 🅲 Package
 
+<details>
+
+<summary>Package</summary>
 ```python
 @dataclass
 class Package:
@@ -31,8 +35,14 @@ class Package:
     fully_qualified_name: str = None
     modules: list[Module] = field(default_factory=list)
 ```
+
+</details>
+
 ## 🅲 Module
 
+<details>
+
+<summary>Module</summary>
 ```python
 @dataclass
 class Module:
@@ -47,8 +57,14 @@ class Module:
     exports: list[str] = field(default_factory=list)
     aliases: dict[str, str] = field(default_factory=dict)
 ```
+
+</details>
+
 ## 🅲 Class
 
+<details>
+
+<summary>Class</summary>
 ```python
 @dataclass
 class Class:
@@ -62,8 +78,14 @@ class Class:
     decorator_list: list[str] = field(default_factory=list)
     constants: list[Constant] = field(default_factory=list)
 ```
+
+</details>
+
 ## 🅲 Function
 
+<details>
+
+<summary>Function</summary>
 ```python
 @dataclass
 class Function:
@@ -73,9 +95,16 @@ class Function:
     signature: str = None
     docstring: docstring_parser.Docstring | None = None
     decorator_list: list[str] = field(default_factory=list)
+    body: str | None = None
 ```
+
+</details>
+
 ## 🅲 Constant
 
+<details>
+
+<summary>Constant</summary>
 ```python
 @dataclass
 class Constant:
@@ -86,3 +115,5 @@ class Constant:
     type: str | None = None
     comment: str | None = None
 ```
+
+</details>

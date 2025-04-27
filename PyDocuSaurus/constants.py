@@ -27,12 +27,15 @@ FLAG_EXPLAIN = """**Flags:**
 
 INDEX_TEMPLATE = """---
 title: {}
+sidebar_position: {}
 ---
 
 """
 # Index template for docusaurus
 
 MAX_LINES = 25
+INCLUDE_LINES = 20
+INCLUDE_IF = True
 DETAIL_TEMPLATE_BEGINE = """<details>
 
 <summary>{}</summary>"""
@@ -395,6 +398,34 @@ COMMON_TYPE_LINKS = {
     "None": (
         "https://docs.python.org/3/library/constants.html#None",
         "None",
+    ),
+    "inspect.Parameter": (
+        "https://docs.python.org/3/library/inspect.html#inspect.Parameter",
+        "Parameter",
+    ),
+    "inspect.Signature": (
+        "https://docs.python.org/3/library/inspect.html#inspect.Signature",
+        "Signature",
+    ),
+    "inspect.ParameterKind": (
+        "https://docs.python.org/3/library/inspect.html#inspect.ParameterKind",
+        "ParameterKind",
+    ),
+    "inspect.Section": (
+        "https://docs.python.org/3/library/inspect.html#inspect.Section",
+        "Section",
+    ),
+    "inspect.SectionType": (
+        "https://docs.python.org/3/library/inspect.html#inspect.SectionType",
+        "SectionType",
+    ),
+    "inspect.SINGULAR": (
+        "https://docs.python.org/3/library/inspect.html#inspect.SINGULAR",
+        "SINGULAR",
+    ),
+    "Sequence": (
+        "https://docs.python.org/3/library/typing.html#typing.Sequence",
+        "Sequence",
     ),
 }
 

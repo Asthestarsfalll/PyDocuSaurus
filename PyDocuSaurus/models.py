@@ -58,6 +58,7 @@ class Function:
     signature: str
     docstring: docstring_parser.Docstring | None = None
     decorator_list: list[str] = field(default_factory=list)
+    body: str | None = None
 
 
 @dataclass

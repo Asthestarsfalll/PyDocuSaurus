@@ -1,5 +1,6 @@
 ---
 title: generate
+sidebar_position: 3
 ---
 
 This script crawls a Python package directory, extracts docstrings from modules,
@@ -24,9 +25,41 @@ Additional features:
 
 ## 🅵 crawl\_package
 
+<details>
+
+<summary>crawl\_package</summary>
 ```python
 def crawl_package(package_path: Path, include_private: bool = False) -> Package:
+    pkg_name = package_path.name
+    package = Package(
+        path=package_path,
+        name=pkg_name,
+        fully_qualified_name=pkg_name,
+        modules=[],
+    )
+    modules = []
+    for file_path in package_path.glob("*.py"):
+        if (
+            not include_private
+            and file_path.stem.startswith("_")
+            and not file_path.stem.startswith("__")
+        ):
+            continue
+        module = parse_module(
+            file_path, package.fully_qualified_name, include_private
+        )
+        if module.name == "__init__":
+            modules.append(module)
+    while modules:
+        module = modules.pop()
+        package.modules.append(module)
+        modules.extend(module.submodules)
+    package.modules.sort(key=lambda m: m.fully_qualified_name)
+    return package
 ```
+
+</details>
+
 
 Recursively crawl the package directory, parsing each .py file as a Module.
 

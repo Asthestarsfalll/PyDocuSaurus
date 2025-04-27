@@ -83,6 +83,17 @@ def main() -> None:
         type=int,
         help="Automatically fold code blocks that exceed this many lines",
     )
+    parser.add_argument(
+        "--include-lines",
+        default=0,
+        type=int,
+        help="Include some small functions' source code",
+    )
+    parser.add_argument(
+        "--exclude-if",
+        action="store_false",
+        help="Exclude constants, function and class in if statements",
+    )
     args = parser.parse_args()
     package_dir = Path(args.package_path)
 
@@ -90,6 +101,8 @@ def main() -> None:
         print(f"Error: {package_dir} is not a directory.")
         return
     constants.MAX_LINES = args.max_lines
+    constants.INCLUDE_LINES = args.include_lines
+    constants.INCLUDE_IF = args.exclude_if
     package = crawl_package(package_dir, include_private=args.include_private)
     renderer = MarkdownRenderer()
     output_path = Path(args.output_path)

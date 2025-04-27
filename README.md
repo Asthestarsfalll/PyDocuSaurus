@@ -43,6 +43,8 @@ Arguments:
 - `--include-private`: Include private members in the documentation
 - `--no-runtime`: Do not import code to get runtime information
 - `--max-lines`: Automatically fold code blocks that exceed this many lines
+- `--include-lines`: Include some small functions' source code
+- `--exclude-if`: Exclude constants, function and class in if statements
 
 Example:
 ```bash

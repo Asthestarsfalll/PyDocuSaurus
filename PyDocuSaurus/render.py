@@ -54,7 +54,7 @@ def auto_fold(name: str, lines: list[str]):
     yield
     count = 0
     for line in lines[idx:]:
-        count += line.count("\n") or 1
+        count += line.count("\n") or 0
         if count >= constants.MAX_LINES:
             lines.insert(idx, DETAIL_TEMPLATE_BEGINE.format(name))
             lines.append(DETAIL_TEMPLATE_END)
@@ -164,7 +164,7 @@ class MarkdownRenderer:
         """
         self.use_runtime = use_runtime
 
-        lines = [INDEX_TEMPLATE.format("API Reference")]
+        lines = [INDEX_TEMPLATE.format("API Reference", 1)]
         lines.append(f"# `{package.name}`")
         lines.append("")
         lines.append(FLAG_EXPLAIN)
@@ -189,9 +189,9 @@ class MarkdownRenderer:
                 module_lines = self.render_module(module, add_toc=len(levels) > 1)
                 module_lines.append("")
                 # module_output = INDEX_TEMPLATE.format(module.fully_qualified_name if module.name =='__init__' else file_name[:-3]) + "\n".join(module_lines)
-                module_output = INDEX_TEMPLATE.format(file_name[:-3]) + "\n".join(
-                    module_lines
-                )
+                module_output = INDEX_TEMPLATE.format(
+                    file_name[:-3], 2 if module.name == "__init__" else 3
+                ) + "\n".join(module_lines)
                 file_name = handle_name_conflict(module.fully_qualified_name, True)
                 if module.name == "__init__":
                     relative_path = os.sep.join(levels[1:])
@@ -487,7 +487,9 @@ class MarkdownRenderer:
         with auto_fold(escaped_markdown(func.name), lines):
             lines.append("```python")
             lines.append(
-                format_signature("".join([*func.decorator_list, func.signature]))
+                format_signature(
+                    func.body or "".join([*func.decorator_list, func.signature])
+                )
             )
             lines.append("```")
         lines.append("")
@@ -505,8 +507,6 @@ class MarkdownRenderer:
         return lines
 
     def _try_link(self, text, cur_fq_name, runtime_module=None, cut_idx=0, alias=None):
-        split_text = text.split(" | ")
-
         def _inner(t):
             t = t.strip()
             link, _, full_name = self._cross_file_link(
@@ -522,7 +522,27 @@ class MarkdownRenderer:
                 return t
             return f"[{full_name or t}]({link})"
 
-        return " | ".join([_inner(x) for x in split_text])
+        def _compare_position(s):
+            bracket_pos = s.find("[")
+            comma_pos = s.find(",")
+            if bracket_pos != -1 and comma_pos != -1 and comma_pos < bracket_pos:
+                return False
+            return True
+
+        def _parse_nested_ann(anno: str):
+            if "[" in anno and _compare_position(anno):
+                annos = anno.split("[")
+                prefix = _inner(annos[0].strip())
+                suffix = "[".join(annos[1:]).rstrip("]")
+                suffix = _parse_nested_ann(suffix)
+                return f"{prefix}[{suffix}]"
+            elif "|" in anno:
+                return " | ".join(_parse_nested_ann(a.strip()) for a in anno.split("|"))
+            elif "," in anno:
+                return ", ".join(_parse_nested_ann(a.strip()) for a in anno.split(","))
+            return _inner(anno.strip())
+
+        return _parse_nested_ann(text)
 
     def render_docstring(
         self,
