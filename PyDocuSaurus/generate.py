@@ -19,6 +19,7 @@ from pathlib import Path
 from .models import Package
 from .parse import parse_module
 from .render import MarkdownRenderer
+from . import constants
 
 
 def crawl_package(package_path: Path, include_private: bool = False) -> Package:
@@ -76,16 +77,21 @@ def main() -> None:
         action="store_false",
         help="Use runtime information",
     )
+    parser.add_argument(
+        "--max-lines",
+        default=30,
+        type=int,
+        help="Automatically fold code blocks that exceed this many lines",
+    )
     args = parser.parse_args()
     package_dir = Path(args.package_path)
 
     if not package_dir.is_dir():
         print(f"Error: {package_dir} is not a directory.")
         return
-
+    constants.MAX_LINES = args.max_lines
     package = crawl_package(package_dir, include_private=args.include_private)
     renderer = MarkdownRenderer()
-
     output_path = Path(args.output_path)
     renderer.render(package, output_path, args.no_runtime)
 

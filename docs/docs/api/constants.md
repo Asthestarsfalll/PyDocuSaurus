@@ -100,7 +100,7 @@ title: {}
 ## 🅰 MAX\_LINES
 
 ```python
-MAX_LINES = 10
+MAX_LINES = 25
 ```
 
 ## 🅰 DETAIL\_TEMPLATE\_BEGINE
@@ -141,7 +141,7 @@ OBJECT_CACHE: dict[dict[str, str]] = defaultdict(lambda: {}) #name: {fully_quali
 
 <details>
 
-<summary>COMMON_TYPE_LINKS</summary>
+<summary>COMMON\_TYPE\_LINKS</summary>
 ```python
 COMMON_TYPE_LINKS = {
     "int": (

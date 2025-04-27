@@ -11,6 +11,7 @@ title: render
   - 🅰 [\_MARKDOWN\_CHARACTERS\_TO\_ESCAPE\_SIMPLE](#🅰-_markdown_characters_to_escape_simple) - \+\!\|"\)
   - 🅰 [USE\_TYPE\_FULL\_NAME](#🅰-use_type_full_name)
 - **Functions:**
+  - 🅵 [auto\_fold](#🅵-auto_fold)
   - 🅵 [get\_relative\_path](#🅵-get_relative_path)
   - 🅵 [check\_type](#🅵-check_type)
   - 🅵 [format\_code](#🅵-format_code)
@@ -67,6 +68,12 @@ USE_TYPE_FULL_NAME = False
 
 ## Functions
 
+## 🅵 auto\_fold
+
+```python
+@contextmanager
+def auto_fold(name: str, lines: list[str]):
+```
 ## 🅵 get\_relative\_path
 
 ```python

@@ -1,4 +1,5 @@
 from __future__ import annotations
+from contextlib import contextmanager
 
 from .constants import (
     INDEX_TEMPLATE,
@@ -13,11 +14,11 @@ from .constants import (
     METHOD_FLAG,
     FLAG_EXPLAIN,
     COMMON_TYPE_LINKS,
-    MAX_LINES,
     DETAIL_TEMPLATE_BEGINE,
     DETAIL_TEMPLATE_END,
     Return,
 )
+from . import constants
 from functools import lru_cache, partial
 import importlib
 from .models import Package, Module, Constant, Class, Function, DocumentedItem
@@ -45,6 +46,19 @@ CUTTING_MAPPING = {
 _MARKDOWN_CHARACTERS_TO_ESCAPE = set(r"\`*_{}[]<>()#+.!|")
 _MARKDOWN_CHARACTERS_TO_ESCAPE_SIMPLE = set(r"\`*__{}[]<>()#+!|")
 USE_TYPE_FULL_NAME = False
+
+
+@contextmanager
+def auto_fold(name: str, lines: list[str]):
+    idx = len(lines)
+    yield
+    count = 0
+    for line in lines[idx:]:
+        count += line.count("\n") or 1
+        if count >= constants.MAX_LINES:
+            lines.insert(idx, DETAIL_TEMPLATE_BEGINE.format(name))
+            lines.append(DETAIL_TEMPLATE_END)
+            break
 
 
 def get_relative_path(dir_a, dir_b):
@@ -206,15 +220,12 @@ class MarkdownRenderer:
         header_prefix = "#" * level
         lines.append(f"{header_prefix} {ATTR_FLAG} {escaped_markdown(const.name)}")
         lines.append("")
-        if is_too_long := const.value.count("\n") > MAX_LINES:
-            lines.append(DETAIL_TEMPLATE_BEGINE.format(const.name))
-        lines.append("```python")
-        lines.append(self._render_constant(const))
-        if const.comment:
-            lines[-1] += " #" + const.comment
-        lines.append("```")
-        if is_too_long:
-            lines.append(DETAIL_TEMPLATE_END)
+        with auto_fold(escaped_markdown(const.name), lines):
+            lines.append("```python")
+            lines.append(self._render_constant(const))
+            if const.comment:
+                lines[-1] += " #" + const.comment
+            lines.append("```")
         return lines
 
     def render_module(
@@ -420,12 +431,17 @@ class MarkdownRenderer:
         header_prefix = "#" * level
         lines.append(f"{header_prefix} {CLASS_FLAG} {escaped_markdown(cls.name)}")
         lines.append("")
-        lines.append("```python")
-        constants = ["\n" + self._render_constant(c, indent=1) for c in cls.constants]
-        lines.append(
-            format_signature("".join([*cls.decorator_list, cls.signature, *constants]))
-        )
-        lines.append("```")
+        with auto_fold(escaped_markdown(cls.name), lines):
+            lines.append("```python")
+            constants = [
+                "\n" + self._render_constant(c, indent=1) for c in cls.constants
+            ]
+            lines.append(
+                format_signature(
+                    "".join([*cls.decorator_list, cls.signature, *constants])
+                )
+            )
+            lines.append("```")
         lines.append("")
         if cls.docstring:
             lines.extend(
@@ -438,7 +454,6 @@ class MarkdownRenderer:
             )
             lines.append("")
         if cls.functions:
-            # lines.append("**Functions:**")
             lines.append("")
             for func in cls.functions:
                 lines.extend(
@@ -469,9 +484,12 @@ class MarkdownRenderer:
         header_prefix = "#" * level
         lines.append(f"{header_prefix} {flag} {escaped_markdown(func.name, False)}")
         lines.append("")
-        lines.append("```python")
-        lines.append(format_signature("".join([*func.decorator_list, func.signature])))
-        lines.append("```")
+        with auto_fold(escaped_markdown(func.name), lines):
+            lines.append("```python")
+            lines.append(
+                format_signature("".join([*func.decorator_list, func.signature]))
+            )
+            lines.append("```")
         lines.append("")
         if func.docstring:
             lines.extend(

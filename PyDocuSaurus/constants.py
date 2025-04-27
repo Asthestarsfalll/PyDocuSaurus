@@ -32,7 +32,7 @@ title: {}
 """
 # Index template for docusaurus
 
-MAX_LINES = 10
+MAX_LINES = 25
 DETAIL_TEMPLATE_BEGINE = """<details>
 
 <summary>{}</summary>"""

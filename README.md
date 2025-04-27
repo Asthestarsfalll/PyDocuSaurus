@@ -8,8 +8,6 @@ A Python module and CLI that walks a Python package/directory and outputs a **Do
 
 ## TODO
 
-- [x] Fix the links in module exports
-- [ ] Colorize the parameters, returns and riaises item
 - [ ] Supports for other Docusaurus features
 - [ ] More configurable
 - [ ] Auto translation
@@ -43,6 +41,8 @@ Arguments:
 - `package_dir`: Path to your Python package directory
 - `output_dir`: Path where the Markdown documentation file will be saved
 - `--include-private`: Include private members in the documentation
+- `--no-runtime`: Do not import code to get runtime information
+- `--max-lines`: Automatically fold code blocks that exceed this many lines
 
 Example:
 ```bash
