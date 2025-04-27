@@ -46,6 +46,8 @@ class Class:
     docstring: docstring_parser.Docstring | None = None
     functions: list[Function] = field(default_factory=list)
     classes: list[Class] = field(default_factory=list)  # For nested classes
+    decorator_list: list[str] = field(default_factory=list)
+    constants: list[Constant] = field(default_factory=list)
 
 
 @dataclass
@@ -55,6 +57,7 @@ class Function:
     fully_qualified_name: str  # e.g. foo.bar.Baz.method
     signature: str
     docstring: docstring_parser.Docstring | None = None
+    decorator_list: list[str] = field(default_factory=list)
 
 
 @dataclass

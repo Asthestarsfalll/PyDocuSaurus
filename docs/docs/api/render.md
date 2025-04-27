@@ -109,6 +109,7 @@ def escaped_markdown(text: str, simple=True) -> str:
 
 ```python
 class MarkdownRenderer:
+    use_runtime = None
 ```
 
 
@@ -126,6 +127,11 @@ def render(
 Render the given package as Markdown. If output\_path is None or '-', output to stdout.
 
 If output\_path is a directory, each module gets its own file; otherwise, all modules go into one file.
+### 🅼 \_render\_constant
+
+```python
+def _render_constant(self, const: Constant, indent=0) -> str:
+```
 ### 🅼 render\_constant
 
 ```python
@@ -150,6 +156,7 @@ def _try_choose(self, value, alias, cur_level):
 ### 🅼 \_cross\_file\_link
 
 ```python
+@lru_cache(32)
 def _cross_file_link(
     self,
     runtime_module,

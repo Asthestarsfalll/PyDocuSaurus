@@ -102,11 +102,16 @@ def parse_function(
         fully_qualified_name=fq_name,
         signature=f"def {signature}:",
         docstring=parsed_doc,
+        decorator_list=["@" + astor.to_source(d) for d in node.decorator_list],
     )
 
 
 def parse_class(
-    node: ast.ClassDef, parent: Module | Class, file_path: Path, include_private: bool
+    node: ast.ClassDef,
+    parent: Module | Class,
+    file_path: Path,
+    include_private: bool,
+    code: str,
 ) -> Class:
     """Parse a class node into a Class dataclass instance and process its methods and nested classes."""
     raw_doc = ast.get_docstring(node)
@@ -118,6 +123,7 @@ def parse_class(
         signature = f"class {node.name}({bases}):"
     else:
         signature = f"class {node.name}:"
+
     OBJECT_CACHE[node.name][fq_name] = "class"
     cls = Class(
         path=file_path,
@@ -127,6 +133,7 @@ def parse_class(
         docstring=parsed_doc,
         functions=[],
         classes=[],
+        decorator_list=["@" + astor.to_source(d) for d in node.decorator_list],
     )
     # Process methods and nested classes.
     for child in node.body:
@@ -142,6 +149,8 @@ def parse_class(
                 child, parent=cls, file_path=file_path, include_private=include_private
             )
             cls.classes.append(nested_cls)
+        elif isinstance(child, (ast.AnnAssign, ast.Assign)):
+            parse_constants(child, code, cls, file_path, include_private, cache=False)
     return cls
 
 
@@ -201,56 +210,54 @@ def _get_comment_of_constants(code: str, line_number: int) -> str | None:
     return comment
 
 
-def parse_constants(node, code, module, file_path, include_private):
-    if isinstance(node, (ast.Assign, ast.AnnAssign)):
-        # Process ast.Assign nodes (may have multiple targets).
-        if isinstance(node, ast.Assign):
-            for target in node.targets:
-                if (
-                    isinstance(target, ast.Name)
-                    # and target.id.isupper()
-                    and target.id.lower() != "__all__"
-                    and should_include(target.id, include_private)
-                ):
-                    type_annotation = None
-                    if hasattr(node, "type_comment") and node.type_comment:
-                        type_annotation = node.type_comment
-                    # value = ast.unparse(node.value)
-                    value = astor.to_source(node.value)
-                    fq_name = f"{module.fully_qualified_name}.{target.id}"
-                    constant = Constant(
-                        path=file_path,
-                        name=target.id,
-                        fully_qualified_name=fq_name,
-                        value=value,
-                        type=type_annotation,
-                        comment=_get_comment_of_constants(code, node.lineno),
-                    )
-                    module.constants.append(constant)
-                    OBJECT_CACHE[target.id][fq_name] = "constant"
-                    break
-        # Process annotated assignments.
-        elif isinstance(node, ast.AnnAssign):
+def parse_constants(node, code, module, file_path, include_private, cache=True):
+    if isinstance(node, ast.Assign):
+        for target in node.targets:
             if (
-                isinstance(node.target, ast.Name)
-                # and node.target.id.isupper()
-                and node.target.id.lower != "__all__"
-                and should_include(node.target.id, include_private)
+                isinstance(target, ast.Name)
+                # and target.id.isupper()
+                and target.id.lower() != "__all__"
+                and should_include(target.id, include_private)
             ):
-                type_annotation = (
-                    ast.unparse(node.annotation) if node.annotation else None
-                )
-                value = ast.unparse(node.value) if node.value is not None else "None"
-                fq_name = f"{module.fully_qualified_name}.{node.target.id}"
+                type_annotation = None
+                if hasattr(node, "type_comment") and node.type_comment:
+                    type_annotation = node.type_comment
+                # value = ast.unparse(node.value)
+                value = astor.to_source(node.value)
+                fq_name = f"{module.fully_qualified_name}.{target.id}"
                 constant = Constant(
                     path=file_path,
-                    name=node.target.id,
+                    name=target.id,
                     fully_qualified_name=fq_name,
                     value=value,
                     type=type_annotation,
                     comment=_get_comment_of_constants(code, node.lineno),
                 )
                 module.constants.append(constant)
+                if cache:
+                    OBJECT_CACHE[target.id][fq_name] = "constant"
+                # break
+    # Process annotated assignments.
+    elif isinstance(node, ast.AnnAssign):
+        if (
+            isinstance(node.target, ast.Name)
+            # and node.target.id.isupper()
+            and node.target.id.lower != "__all__"
+            and should_include(node.target.id, include_private)
+        ):
+            type_annotation = ast.unparse(node.annotation) if node.annotation else None
+            value = ast.unparse(node.value) if node.value is not None else "None"
+            fq_name = f"{module.fully_qualified_name}.{node.target.id}"
+            constant = Constant(
+                path=file_path,
+                name=node.target.id,
+                fully_qualified_name=fq_name,
+                value=value,
+                type=type_annotation,
+                comment=_get_comment_of_constants(code, node.lineno),
+            )
+            module.constants.append(constant)
+            if cache:
                 OBJECT_CACHE[node.target.id][fq_name] = "constant"
 
 
@@ -290,6 +297,7 @@ def parse_module_functions(
 
 
 def parse_module_classes(
+    code: str,
     module_ast: ast.Module,
     module: Module,
     file_path: Path,
@@ -305,6 +313,7 @@ def parse_module_classes(
                 parent=module,
                 file_path=file_path,
                 include_private=include_private,
+                code=code,
             )
             module.classes.append(cls)
 
@@ -364,7 +373,7 @@ def parse_module(
     )
     parse_module_constants(source, module_ast, module, file_path, include_private)
     parse_module_functions(module_ast, module, file_path, include_private)
-    parse_module_classes(module_ast, module, file_path, include_private)
+    parse_module_classes(source, module_ast, module, file_path, include_private)
     if mod_name == "__init__":
         module.exports, module.aliases = parse_module_exports(module_ast)
         parse_module_submodules(module, file_path, include_private)

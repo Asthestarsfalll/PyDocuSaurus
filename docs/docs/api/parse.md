@@ -71,6 +71,7 @@ def parse_class(
     parent: Module | Class,
     file_path: Path,
     include_private: bool,
+    code: str,
 ) -> Class:
 ```
 
@@ -107,7 +108,7 @@ def _get_comment_of_constants(code: str, line_number: int) -> str | None:
 ## 🅵 parse\_constants
 
 ```python
-def parse_constants(node, code, module, file_path, include_private):
+def parse_constants(node, code, module, file_path, include_private, cache=True):
 ```
 ## 🅵 parse\_module\_constants
 
@@ -142,6 +143,7 @@ Parse top-level functions in a module.
 
 ```python
 def parse_module_classes(
+    code: str,
     module_ast: ast.Module,
     module: Module,
     file_path: Path,

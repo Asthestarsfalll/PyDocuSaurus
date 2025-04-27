@@ -194,17 +194,22 @@ class MarkdownRenderer:
             lines.append(extra_lines)
             (output_path / "index.md").write_text("\n".join(lines), encoding="utf8")
 
+    def _render_constant(self, const: Constant, indent=0) -> str:
+        value = const.value.strip("\n")
+        type_str = f": {const.type}" if const.type else ""
+        return "    " * indent + format_code(f"{const.name}{type_str} = {value}").strip(
+            "\n"
+        )
+
     def render_constant(self, const: Constant, level: int = 2) -> list[str]:
         lines: list[str] = []
         header_prefix = "#" * level
-        type_str = f": {const.type}" if const.type else ""
         lines.append(f"{header_prefix} {ATTR_FLAG} {escaped_markdown(const.name)}")
         lines.append("")
         if is_too_long := const.value.count("\n") > MAX_LINES:
             lines.append(DETAIL_TEMPLATE_BEGINE.format(const.name))
         lines.append("```python")
-        value = const.value.strip("\n")
-        lines.append(format_code(f"{const.name}{type_str} = {value}").strip("\n"))
+        lines.append(self._render_constant(const))
         if const.comment:
             lines[-1] += " #" + const.comment
         lines.append("```")
@@ -416,7 +421,10 @@ class MarkdownRenderer:
         lines.append(f"{header_prefix} {CLASS_FLAG} {escaped_markdown(cls.name)}")
         lines.append("")
         lines.append("```python")
-        lines.append(cls.signature)
+        constants = ["\n" + self._render_constant(c, indent=1) for c in cls.constants]
+        lines.append(
+            format_signature("".join([*cls.decorator_list, cls.signature, *constants]))
+        )
         lines.append("```")
         lines.append("")
         if cls.docstring:
@@ -462,7 +470,7 @@ class MarkdownRenderer:
         lines.append(f"{header_prefix} {flag} {escaped_markdown(func.name, False)}")
         lines.append("")
         lines.append("```python")
-        lines.append(format_signature(func.signature))
+        lines.append(format_signature("".join([*func.decorator_list, func.signature])))
         lines.append("```")
         lines.append("")
         if func.docstring:
