@@ -240,10 +240,6 @@ class MarkdownRenderer:
         """
         lines: list[str] = []
         header_prefix = "#" * level
-        if add_toc:
-            lines.append(f"{header_prefix}# TOC")
-        lines.append("")
-
         # Render module docstring details if available.
         if module.docstring:
             lines.extend(
@@ -252,6 +248,10 @@ class MarkdownRenderer:
                 )
             )
             lines.append("")
+        if add_toc:
+            lines.append(f"{header_prefix}# TOC")
+        lines.append("")
+
         if module.exports and add_toc:
             # lines.append(f"- **[Exports](#{module.fully_qualified_name}-exports)**")
             lines.append("- **[Exports](#exports)**")
