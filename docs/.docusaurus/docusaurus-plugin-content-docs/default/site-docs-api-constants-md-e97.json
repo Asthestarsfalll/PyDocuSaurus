@@ -10,8 +10,10 @@
   "unlisted": false,
   "tags": [],
   "version": "current",
+  "sidebarPosition": 3,
   "frontMatter": {
-    "title": "constants"
+    "title": "constants",
+    "sidebar_position": 3
   },
   "sidebar": "tutorialSidebar",
   "previous": {

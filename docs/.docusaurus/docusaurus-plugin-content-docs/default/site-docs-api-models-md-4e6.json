@@ -10,8 +10,10 @@
   "unlisted": false,
   "tags": [],
   "version": "current",
+  "sidebarPosition": 3,
   "frontMatter": {
-    "title": "models"
+    "title": "models",
+    "sidebar_position": 3
   },
   "sidebar": "tutorialSidebar",
   "previous": {

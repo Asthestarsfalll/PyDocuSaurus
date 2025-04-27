@@ -1,7 +1,7 @@
 {
   "id": "api/generate",
   "title": "generate",
-  "description": "TOC",
+  "description": "This script crawls a Python package directory, extracts docstrings from modules,",
   "source": "@site/docs/api/generate.md",
   "sourceDirName": "api",
   "slug": "/api/generate",
@@ -10,8 +10,10 @@
   "unlisted": false,
   "tags": [],
   "version": "current",
+  "sidebarPosition": 3,
   "frontMatter": {
-    "title": "generate"
+    "title": "generate",
+    "sidebar_position": 3
   },
   "sidebar": "tutorialSidebar",
   "previous": {

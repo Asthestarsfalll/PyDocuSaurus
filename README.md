@@ -51,7 +51,10 @@ Example:
 pdocs ./src/my_package docs/api/
 ```
 
-## Documentation
+## Examples
+
+1. [PyDocuSaurus](https://pydocusaurus.onism.space/docs/api/)
+2. [neetbox](https://neetbox.550w.host/docs/apidocs/)
 
 
 ## Contributing
