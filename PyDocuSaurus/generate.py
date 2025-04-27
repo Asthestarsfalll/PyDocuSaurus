@@ -71,6 +71,11 @@ def main() -> None:
         action="store_true",
         help="Include private functions, classes, and constants (names starting with '_')",
     )
+    parser.add_argument(
+        "--no-runtime",
+        action="store_false",
+        help="Use runtime information",
+    )
     args = parser.parse_args()
     package_dir = Path(args.package_path)
 
@@ -82,7 +87,7 @@ def main() -> None:
     renderer = MarkdownRenderer()
 
     output_path = Path(args.output_path)
-    renderer.render(package, output_path)
+    renderer.render(package, output_path, args.no_runtime)
 
 
 if __name__ == "__main__":

@@ -119,7 +119,7 @@ def render(
     self,
     package: Package,
     output_path: Path | None = None,
-    base_url: str | None = None,
+    use_runtime: bool = True,
 ) -> None:
 ```
 

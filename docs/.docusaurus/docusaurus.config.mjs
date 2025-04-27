@@ -58,17 +58,17 @@ export default {
       },
       "items": [
         {
-          "to": "/docs/api",
+          "to": "/docs/api/",
           "label": "API Reference",
           "position": "left"
         },
         {
-          "to": "/docs",
+          "to": "/docs/",
           "label": "Tutorial",
           "position": "left"
         },
         {
-          "to": "/blog",
+          "to": "/blog/",
           "label": "Blog",
           "position": "left"
         },

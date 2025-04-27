@@ -136,19 +136,19 @@ def escaped_markdown(text: str, simple=True) -> str:
 
 
 class MarkdownRenderer:
-    base_url = None
+    use_runtime = None
 
     def render(
         self,
         package: Package,
         output_path: Path | None = None,
-        base_url: str | None = None,
+        use_runtime: bool = True,
     ) -> None:
         """
         Render the given package as Markdown. If output_path is None or '-', output to stdout.
         If output_path is a directory, each module gets its own file; otherwise, all modules go into one file.
         """
-        self.base_url = base_url
+        self.use_runtime = use_runtime
 
         lines = [INDEX_TEMPLATE.format("API Reference")]
         lines.append(f"# `{package.name}`")
@@ -298,7 +298,11 @@ class MarkdownRenderer:
         if module.exports:
             lines.append(f"{header_prefix}# Exports")
             lines.append("")
-            runtime_module = try_import_module(module.fully_qualified_name)
+            runtime_module = (
+                try_import_module(module.fully_qualified_name)
+                if self.use_runtime
+                else None
+            )
             doc_base = module.fully_qualified_name.split(".")[0]
             for exp in module.exports:
                 link, export_type, full_name = self._cross_file_link(
